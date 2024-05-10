@@ -38,6 +38,12 @@ ul {
     align-items: center;
 }
 
+.posts-list ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 li {
     float: left;
     height: 100%;
@@ -59,6 +65,18 @@ li a:hover {
 
 h2 {
     text-align: center;
+}
+
+.posts-list {
+
+}
+
+.post {
+    width: 80%;
+    padding: 1em;
+    margin-bottom: 1em;
+    border-radius: 1em;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 footer {
