@@ -3,6 +3,9 @@
     --accent-color: pink;
 }
 
+* {
+    margin: 0;
+}
 
 
 body {
@@ -19,6 +22,7 @@ header {
 
 .logo {
     display: flex;
+    align-items: center;
 }
 
 nav {
@@ -46,7 +50,7 @@ li a {
     height: 100%;
     padding-left: .5em;
     padding-right: .5em;
-    line-height: 5.5em;
+    line-height: 3em;
 }
 
 li a:hover {

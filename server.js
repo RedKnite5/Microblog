@@ -252,3 +252,4 @@ function generateAvatar(letter, width = 100, height = 100) {
     // 4. Draw the letter in the center
     // 5. Return the avatar as a PNG buffer
 }
+
