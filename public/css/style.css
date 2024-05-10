@@ -1,0 +1,70 @@
+
+:root {
+    --accent-color: pink;
+}
+
+
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: var(--accent-color);
+    display: flex;
+    justify-content: space-between;
+    padding: 1em;
+}
+
+.logo {
+    display: flex;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    align-items: center;
+}
+
+li {
+    float: left;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+li a {
+    text-decoration: inherit;
+    height: 100%;
+    padding-left: .5em;
+    padding-right: .5em;
+    line-height: 5.5em;
+}
+
+li a:hover {
+    background-color: #fbb1bd;
+}
+
+h2 {
+    text-align: center;
+}
+
+footer {
+    align-items: center;
+    text-align: center;
+    background-color: var(--accent-color);
+    padding-top: .5em;
+    padding-bottom: .5em;
+}
+
+footer p {
+    margin: 0;
+}
