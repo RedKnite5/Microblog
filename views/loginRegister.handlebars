@@ -2,21 +2,28 @@
 {{!< main }}
 
 <section class="login-register">
-    <section class = "login-area">
+    <section class = "login-area signin-area">
         <h2>Login</h2>
         <!-- errors will appear here -->
         {{#if loginError}}
             <p style="color: red;">{{loginError}}</p>
         {{/if}}
         <form action="/login" method="POST">
-            <!-- the login form goes here -->        
-             <button type="submit">Login</button>
+            <!-- the login form goes here -->
+            <div class="username-input">
+                <label for="login-username">Username:</label>
+                <input type="text" id="login-username">
+            </div>
+
+            <button type="submit" id="login">Login</button>
         </form>
     </section>
 
     <!-- say --OR-- ... with style -->
+    <h1>-OR-</h1>
 
-    <section class = "register-area">
+
+    <section class = "register-area signin-area">
         <h2>Register</h2>
         <!-- errors will appear here -->
         {{#if regError}}
@@ -24,6 +31,11 @@
         {{/if}}
         <form action="/register" method="POST">
             <!-- the registration form goes here -->
+            <div class="username-input">
+                <label for="register-username">Username:</label>
+                <input type="text" id="register-username">
+            </div>
+
             <button type="submit">Register</button>
         </form>
     </section>

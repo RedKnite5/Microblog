@@ -5,6 +5,7 @@
 
 * {
     margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 
@@ -67,16 +68,68 @@ h2 {
     text-align: center;
 }
 
-.posts-list {
-
-}
-
 .post {
     width: 80%;
     padding: 1em;
     margin-bottom: 1em;
     border-radius: 1em;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin-top: .5em;
+    margin-bottom: .5em;
+}
+
+.login-register {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+/* mobile */
+@media (max-width: 800px) {
+    .login-register {
+        flex-direction: column;
+    }
+
+    .login-register section {
+        width: 60vw;
+    }
+}
+
+.login-register section {
+    min-width: 20vw;
+    height: 50vh;
+    padding: 1em;
+    border-radius: 1em;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    margin-top: 3em;
+    margin-bottom: 3em;
+}
+
+.login-register section h2 {
+    text-align: left;
+}
+
+.username-input {
+    display: flex;
+    flex-direction: column;
+}
+
+.username-input input {
+    padding: 1em;
+    border-radius: .5em;
+}
+
+.login-register button {
+    width: 100%;
+    margin-top: 1em;
+    background-color: var(--accent-color);
+    padding: 1em;
+    border-radius: 1em;
 }
 
 footer {
