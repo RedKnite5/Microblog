@@ -64,6 +64,17 @@ li a:hover {
     background-color: #fbb1bd;
 }
 
+.user-info {
+    display: inline;
+}
+
+.header-avatar {
+    display: inline;
+    width: 2em;
+    aspect-ratio: 1/1;
+    border-radius: .3em;
+}
+
 h2 {
     text-align: center;
 }
@@ -76,11 +87,11 @@ h2 {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
-.like-button {
+.icon-button {
     color: var(--accent-color);
 }
 
-.like-button:hover {
+.icon-button:hover {
     color: red;
 }
 

@@ -51,9 +51,6 @@ app.engine(
                 }
                 return options.inverse(this);
             },
-            log: function(message) {
-                console.log(message);
-            },
         },
     })
 );
@@ -140,6 +137,7 @@ app.get('/profile', isAuthenticated, (req, res) => {
 });
 app.get('/avatar/:username', (req, res) => {
     // TODO: Serve the avatar image for the user
+    return handleAvatar(req, res);
 });
 app.post('/register', (req, res) => {
     // TODO: Register a new user
@@ -175,6 +173,24 @@ app.post('/login', (req, res) => {
 
 app.get('/logout', (req, res) => {
     // TODO: Logout the user
+    // clear the user from the session object and save.
+    // this will ensure that re-using the old session id
+    // does not have a logged in user
+    req.session.user = null;
+    req.session.save(function (err) {
+        if (err) {
+            next(err);
+        }
+
+        // regenerate the session, which is good practice to help
+        // guard against forms of session fixation
+        req.session.regenerate(function (err) {
+            if (err) {
+                next(err);
+            }
+            res.redirect('/');
+        });
+    });
 });
 app.post('/delete/:id', isAuthenticated, (req, res) => {
     // TODO: Delete a post if the current user is the owner
@@ -263,6 +279,13 @@ function updatePostLikes(req, res) {
 // Function to handle avatar generation and serving
 function handleAvatar(req, res) {
     // TODO: Generate and serve the user's avatar image
+    res.set('Content-Type', 'image/png');
+
+    const letter = req.session.user.username[0];
+    const buffer = generateAvatar(letter);
+
+    // Send the image buffer as the response
+    res.send(buffer);
 }
 
 // Function to get the current user from session
@@ -290,5 +313,22 @@ function generateAvatar(letter, width = 100, height = 100) {
     // 3. Draw the background color
     // 4. Draw the letter in the center
     // 5. Return the avatar as a PNG buffer
+
+    const color = "blue"
+
+
+    const can = canvas.createCanvas(width, height)
+    const ctx = can.getContext('2d')
+
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = 'white';
+    ctx.font = '48px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(letter, width / 2, height / 2);
+
+    const buf = can.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE });
+    return buf
 }
 
