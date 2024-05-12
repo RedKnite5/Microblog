@@ -24,15 +24,15 @@ const PORT = 3000;
        - Converts a given string to lowercase.
        - Usage example: {{toLowerCase 'SAMPLE STRING'}} -> 'sample string'
 
-    2. ifCond:
+    2. ifEq:
        - Compares two values for equality and returns a block of content based on 
          the comparison result.
        - Usage example: 
-            {{#ifCond value1 value2}}
+            {{#ifEq value1 value2}}
                 <!-- Content if value1 equals value2 -->
             {{else}}
                 <!-- Content if value1 does not equal value2 -->
-            {{/ifCond}}
+            {{/ifEq}}
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
@@ -45,11 +45,14 @@ app.engine(
             toLowerCase: function (str) {
                 return str.toLowerCase();
             },
-            ifCond: function (v1, v2, options) {
+            ifEq: function (v1, v2, options) {
                 if (v1 === v2) {
                     return options.fn(this);
                 }
                 return options.inverse(this);
+            },
+            log: function(message) {
+                console.log(message);
             },
         },
     })
@@ -80,6 +83,7 @@ app.use((req, res, next) => {
     res.locals.postNeoType = 'Post';
     res.locals.loggedIn = req.session.loggedIn || false;
     res.locals.userId = req.session.userId || '';
+    res.locals.user =  {data: 69};
     next();
 });
 
@@ -142,7 +146,33 @@ app.post('/register', (req, res) => {
 });
 app.post('/login', (req, res) => {
     // TODO: Login a user
+
+    // https://expressjs.com/en/resources/middleware/session.html
+
+    // regenerate the session, which is good practice to help
+    // guard against forms of session fixation
+    req.session.regenerate(function (err) {
+        if (err) {
+            next(err);
+        }
+
+        // store user information in session, typically a user id
+        req.session.user = findUserByUsername(req.body.loginUsername);
+        req.session.loggedIn = true;
+
+
+        // save the session before redirection to ensure page
+        // load does not happen before session is saved
+        req.session.save(function (err) {
+            if (err) {
+                return next(err);
+            }
+            res.redirect('/');
+        });
+    });
 });
+
+
 app.get('/logout', (req, res) => {
     // TODO: Logout the user
 });
@@ -175,6 +205,13 @@ let users = [
 // Function to find a user by username
 function findUserByUsername(username) {
     // TODO: Return user object if found, otherwise return undefined
+    for (const user of users) {
+        if (user.username === username) {
+            console.log("Found: ", user);
+            return user;
+        }
+    }
+    return undefined;
 }
 
 // Function to find a user by user ID
@@ -231,6 +268,7 @@ function handleAvatar(req, res) {
 // Function to get the current user from session
 function getCurrentUser(req) {
     // TODO: Return the user object if the session user ID matches
+    return req.session.user;
 }
 
 // Function to get all posts, sorted by latest first

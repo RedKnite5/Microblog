@@ -3,7 +3,10 @@
 
 {{! New Post Submission Form }}
 <section class="content-container">
+    {{#log "home"}}{{/log}}
+    {{#log user}}{{/log}}
     {{#if loggedIn}}
+        logged in
         <!-- show the create post form when logged in -->
         <section class="post-form">
             <!-- make a header here -->
@@ -32,7 +35,7 @@
         <ul>
             {{#each posts}}
                 <!-- you have to pass the user in to posts and this is the syntax -->
-                {{> post this user=../user}}
+                {{> post this user=../user loggedIn=../loggedIn}}
             {{/each}}
         </ul>
         {{else}}

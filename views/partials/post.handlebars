@@ -10,8 +10,21 @@
         <hr>
         <div class="post-status-bar">
             <!-- everything that is shown in the status bar -->
-            <!-- Heart = ♥ -->
-            <!-- font awesome  trashcan = <i class="fas fa-trash-alt"> </i>-->
+            
+            {{#if loggedIn}}
+                {{#ifEq this.username user.username}}
+                    <!-- font awesome  trashcan = <i class="fas fa-trash-alt"> </i>-->
+                    <span class="delete-button">
+                        <i class="fas fa-trash-alt"> </i>
+                    </span>
+                {{else}}
+                    <!-- Heart = ♥ -->
+                    <span class="like-button">
+                        <i class="fa-solid fa-heart"></i>
+                    </span>
+                {{/ifEq}}
+            {{/if}}
+
             <span>{{this.likes}} Likes</span>
             <span>Posted by {{this.username}} on {{this.timestamp}}</span>
         </div>

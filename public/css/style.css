@@ -76,6 +76,14 @@ h2 {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
+.like-button {
+    color: var(--accent-color);
+}
+
+.like-button:hover {
+    color: red;
+}
+
 hr {
     border: 0;
     border-top: 1px solid #eee;
@@ -104,6 +112,7 @@ hr {
     min-width: 20vw;
     height: 50vh;
     padding: 1em;
+    padding-top: 2em;
     border-radius: 1em;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     margin-top: 3em;
@@ -126,7 +135,7 @@ hr {
 
 .login-register button {
     width: 100%;
-    margin-top: 1em;
+    margin-top: 2em;
     background-color: var(--accent-color);
     padding: 1em;
     border-radius: 1em;
