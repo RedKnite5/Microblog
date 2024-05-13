@@ -31,7 +31,7 @@ nav {
     align-items: center;
 }
 
-ul {
+.header-options {
     list-style-type: none;
     padding: 0;
     margin: 0;
