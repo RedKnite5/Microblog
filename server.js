@@ -142,36 +142,16 @@ app.get('/avatar/:username', (req, res) => {
 app.post('/register', (req, res) => {
     // TODO: Register a new user
 
-    addUser(req.body.registerUsername);
-
-    console.log(users);
-
+    const username = req.body.registerUsername;
+    addUser(username);
+    loginUser(req, res, username);
 });
 app.post('/login', (req, res) => {
     // TODO: Login a user
 
-    // https://expressjs.com/en/resources/middleware/session.html
+    const username = req.body.loginUsername;
 
-    // regenerate the session, which is good practice to help
-    // guard against forms of session fixation
-    req.session.regenerate(function (err) {
-        if (err) {
-            next(err);
-        }
-
-        // store user information in session, typically a user id
-        req.session.user = findUserByUsername(req.body.loginUsername);
-        req.session.loggedIn = true;
-
-        // save the session before redirection to ensure page
-        // load does not happen before session is saved
-        req.session.save(function (err) {
-            if (err) {
-                return next(err);
-            }
-            res.redirect('/');
-        });
-    });
+    loginUser(req, res, username);
 });
 
 
@@ -227,7 +207,6 @@ function findUserByUsername(username) {
     // TODO: Return user object if found, otherwise return undefined
     for (const user of users) {
         if (user.username === username) {
-            console.log("Found: ", user);
             return user;
         }
     }
@@ -278,8 +257,31 @@ function registerUser(req, res) {
 }
 
 // Function to login a user
-function loginUser(req, res) {
+function loginUser(req, res, username) {
     // TODO: Login a user and redirect appropriately
+
+    // https://expressjs.com/en/resources/middleware/session.html
+
+    // regenerate the session, which is good practice to help
+    // guard against forms of session fixation
+    req.session.regenerate(function (err) {
+        if (err) {
+            next(err);
+        }
+
+        // store user information in session, typically a user id
+        req.session.user = findUserByUsername(username);
+        req.session.loggedIn = true;
+
+        // save the session before redirection to ensure page
+        // load does not happen before session is saved
+        req.session.save(function (err) {
+            if (err) {
+                return next(err);
+            }
+            res.redirect('/');
+        });
+    });
 }
 
 // Function to logout a user
@@ -336,37 +338,41 @@ function generateAvatar(letter, width = 100, height = 100) {
     // 4. Draw the letter in the center
     // 5. Return the avatar as a PNG buffer
 
+    const SILVER = "#C0C0C0";
+    const BRONZE = "#CD7F32";
+    const PERIWINKLE = "#CCCCFF";
+
     // TODO: test all of these work
     const colors = {
-        A: "red",
-        B: "green",
-        C: "blue",
-        D: "yellow",
-        E: "orange",
-        F: "purple",
-        G: "pink",
-        H: "brown",
-        I: "cyan",
-        J: "magenta",
-        K: "turquoise",
-        L: "lavender",
-        M: "maroon",
-        N: "olive",
-        O: "teal",
-        P: "indigo",
-        Q: "peach",
-        R: "beige",
-        S: "gold",
-        T: "silve",
-        U: "bronze",
-        V: "coral",
-        W: "lime",
-        X: "lightblue",
-        Y: "Periwinkle",
-        Z: "Crimson"
+        a: "red",
+        b: "green",
+        c: "blue",
+        d: "yellow",
+        e: "orange",
+        f: "purple",
+        g: "pink",
+        h: "brown",
+        i: "cyan",
+        j: "magenta",
+        k: "turquoise",
+        l: "lavender",
+        m: "maroon",
+        n: "olive",
+        o: "teal",
+        p: "indigo",
+        q: "peach",
+        r: "beige",
+        s: "gold",
+        t: SILVER,
+        u: BRONZE,
+        v: "coral",
+        w: "lime",
+        x: "lightblue",
+        y: PERIWINKLE,
+        z: "Crimson"
     };
 
-    const color = colors[letter];
+    const color = colors[letter.toLowerCase()];
 
 
     const can = canvas.createCanvas(width, height)

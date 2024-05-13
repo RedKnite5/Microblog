@@ -54,6 +54,7 @@ li {
 
 li a {
     text-decoration: inherit;
+    color: black;
     height: 100%;
     padding-left: .5em;
     padding-right: .5em;
@@ -158,6 +159,9 @@ footer {
     background-color: var(--accent-color);
     padding-top: .5em;
     padding-bottom: .5em;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
 footer p {
