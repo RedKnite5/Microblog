@@ -31,7 +31,7 @@ nav {
     align-items: center;
 }
 
-.header-options {
+ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
@@ -39,7 +39,7 @@ nav {
     align-items: center;
 }
 
-.posts-list ul {
+.posts-ul {
     display: flex;
     flex-direction: column;
     justify-content: center;

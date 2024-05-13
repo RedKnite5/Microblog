@@ -32,7 +32,7 @@
         <h2>Recent Posts</h2>
 
         {{#if posts.length}}
-        <ul>
+        <ul class="posts-ul">
             {{#each posts}}
                 <!-- you have to pass the user in to posts and this is the syntax -->
                 {{> post this user=../user loggedIn=../loggedIn}}
