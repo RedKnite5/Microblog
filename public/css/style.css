@@ -80,29 +80,6 @@ h2 {
     text-align: center;
 }
 
-.post {
-    width: 80%;
-    padding: 1em;
-    margin-bottom: 1em;
-    border-radius: 1em;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-}
-
-.icon-button {
-    color: var(--accent-color);
-}
-
-.icon-button:hover {
-    color: red;
-}
-
-hr {
-    border: 0;
-    border-top: 1px solid #eee;
-    margin-top: .5em;
-    margin-bottom: .5em;
-}
-
 .login-register {
     display: flex;
     align-items: center;

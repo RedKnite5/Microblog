@@ -305,7 +305,7 @@ function handleAvatar(req, res) {
     // TODO: Generate and serve the user's avatar image
     res.set('Content-Type', 'image/png');
 
-    const letter = req.session.user.username[0];
+    const letter = req.params.username[0];
     const buffer = generateAvatar(letter);
 
     // Send the image buffer as the response
