@@ -141,6 +141,11 @@ app.get('/avatar/:username', (req, res) => {
 });
 app.post('/register', (req, res) => {
     // TODO: Register a new user
+
+    addUser(req.body.registerUsername);
+
+    console.log(users);
+
 });
 app.post('/login', (req, res) => {
     // TODO: Login a user
@@ -157,7 +162,6 @@ app.post('/login', (req, res) => {
         // store user information in session, typically a user id
         req.session.user = findUserByUsername(req.body.loginUsername);
         req.session.loggedIn = true;
-
 
         // save the session before redirection to ensure page
         // load does not happen before session is saved
@@ -238,6 +242,24 @@ function findUserById(userId) {
 // Function to add a new user
 function addUser(username) {
     // TODO: Create a new user object and add to users array
+
+    const id = users.length + 1;
+    const avatar_url = undefined;
+    const memberSince = getCurrentDateTime();
+
+    const user = {id: id, username: username, avatar_url: avatar_url, memberSince: memberSince};
+    users.push(user);
+}
+
+function getCurrentDateTime() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
 // Middleware to check if user is authenticated
@@ -314,7 +336,37 @@ function generateAvatar(letter, width = 100, height = 100) {
     // 4. Draw the letter in the center
     // 5. Return the avatar as a PNG buffer
 
-    const color = "blue"
+    // TODO: test all of these work
+    const colors = {
+        A: "red",
+        B: "green",
+        C: "blue",
+        D: "yellow",
+        E: "orange",
+        F: "purple",
+        G: "pink",
+        H: "brown",
+        I: "cyan",
+        J: "magenta",
+        K: "turquoise",
+        L: "lavender",
+        M: "maroon",
+        N: "olive",
+        O: "teal",
+        P: "indigo",
+        Q: "peach",
+        R: "beige",
+        S: "gold",
+        T: "silve",
+        U: "bronze",
+        V: "coral",
+        W: "lime",
+        X: "lightblue",
+        Y: "Periwinkle",
+        Z: "Crimson"
+    };
+
+    const color = colors[letter];
 
 
     const can = canvas.createCanvas(width, height)
@@ -326,7 +378,10 @@ function generateAvatar(letter, width = 100, height = 100) {
     ctx.fillStyle = 'white';
     ctx.font = '48px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(letter, width / 2, height / 2);
+    ctx.textBaseline = 'middle';
+    const x = width / 2;
+    const y = height / 2;
+    ctx.fillText(letter, x, y);
 
     const buf = can.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE });
     return buf
