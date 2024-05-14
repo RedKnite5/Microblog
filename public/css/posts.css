@@ -5,6 +5,18 @@
     margin-bottom: 1em;
     border-radius: 1em;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    display: flex;
+}
+
+.post-avatar-img {
+    width: 4em;
+    aspect-ratio: 1/1;
+    border-radius: .6em;
+    margin-right: 1em;
+}
+
+.post-content {
+    flex-grow: 1;
 }
 
 .post-status-bar {
@@ -23,7 +35,7 @@
 hr {
     border: 0;
     border-top: 1px solid #eee;
-    margin-top: .5em;
+    margin-top: 1em;
     margin-bottom: .5em;
 }
 
