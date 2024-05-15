@@ -244,7 +244,7 @@ function getCurrentDateTime() {
 
 // Middleware to check if user is authenticated
 function isAuthenticated(req, res, next) {
-    console.log(req.session.userId);
+    console.log("isAuthenticated id: ", req.session.userId);
     if (req.session.userId) {
         next();
     } else {

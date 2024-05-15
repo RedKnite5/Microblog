@@ -26,6 +26,8 @@
 
 .icon-button {
     color: var(--accent-color);
+    background-color: inherit;
+    border: 0;
 }
 
 .icon-button:hover {
