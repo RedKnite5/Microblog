@@ -21,14 +21,18 @@
             {{#if loggedIn}}
                 {{#ifEq this.username user.username}}
                     <!-- font awesome  trashcan = <i class="fas fa-trash-alt"> </i>-->
-                    <span class="delete-button icon-button">
-                        <i class="fas fa-trash-alt"> </i>
-                    </span>
+                    <form action="/delete/{{this.id}}" method="POST">
+                        <button type="submit" class="delete-button icon-button">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
                 {{else}}
                     <!-- Heart = ♥ -->
-                    <span class="like-button icon-button">
-                        <i class="fa-solid fa-heart"></i>
-                    </span>
+                    <form action="/like/{{this.id}}" method="POST">
+                        <button type="submit" class="like-button icon-button">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                    </form>
                 {{/ifEq}}
             {{/if}}
 

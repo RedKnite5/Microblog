@@ -131,6 +131,7 @@ app.post('/posts', (req, res) => {
 });
 app.post('/like/:id', (req, res) => {
     // TODO: Update post likes
+    console.log("Id: ", req.params.id);
 });
 app.get('/profile', isAuthenticated, (req, res) => {
     // TODO: Render profile page
