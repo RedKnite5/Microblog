@@ -144,6 +144,12 @@ app.post('/register', (req, res) => {
     // TODO: Register a new user
 
     const username = req.body.registerUsername;
+
+    if (findUserByUsername(username) !== undefined) {
+        res.redirect("/register?error=Username+alread+exists");
+        return;
+    }
+
     addUser(username);
     loginUser(req, res, username);
 });
@@ -151,6 +157,11 @@ app.post('/login', (req, res) => {
     // TODO: Login a user
 
     const username = req.body.loginUsername;
+
+    if (findUserByUsername(username) === undefined) {
+        res.redirect("/login?error=Username+does+not+exist");
+        return;
+    }
 
     loginUser(req, res, username);
 });
