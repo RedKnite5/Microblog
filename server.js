@@ -132,6 +132,12 @@ app.post('/posts', (req, res) => {
 app.post('/like/:id', (req, res) => {
     // TODO: Update post likes
     console.log("Id: ", req.params.id);
+
+    const post = findPostById(parseInt(req.params.id));
+    console.log(post);
+    post.likes += 1;
+
+    res.render("home", {posts: getPosts()});
 });
 app.get('/profile', isAuthenticated, (req, res) => {
     // TODO: Render profile page
@@ -230,6 +236,16 @@ function findUserById(userId) {
     // TODO: Return user object if found, otherwise return undefined
 }
 
+function findPostById(postId) {
+    // TODO: Return post object if found, otherwise return undefined
+    for (const post of posts) {
+        if (post.id === postId) {
+            return post;
+        }
+    }
+    return undefined;
+}
+
 // Function to add a new user
 function addUser(username) {
     // TODO: Create a new user object and add to users array
@@ -309,6 +325,7 @@ function renderProfile(req, res) {
 // Function to update post likes
 function updatePostLikes(req, res) {
     // TODO: Increment post likes if conditions are met
+
 
 }
 
