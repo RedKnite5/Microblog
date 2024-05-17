@@ -129,6 +129,7 @@ h2 {
 .post-form {
     margin: .5em;
     padding-left: 2em;
+    padding-right: 2em;
 }
 
 #post-title-input {
@@ -156,4 +157,12 @@ footer {
 
 footer p {
     margin: 0;
+}
+
+
+/* mobile */
+@media (max-width: 800px) {
+    .content-container {
+        flex-direction: column;
+    }
 }
