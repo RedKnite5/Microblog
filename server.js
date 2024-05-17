@@ -436,7 +436,7 @@ function generateAvatar(letter, width = 200, height = 200) {
         d: "yellow",
         e: "orange",
         f: "purple",
-        g: "pink",
+        g: "black",
         h: "brown",
         i: "cyan",
         j: "magenta",

@@ -1,15 +1,12 @@
 
-
 .profile-container {
     display: flex;
     margin-top: 3em;
+    align-items: center;
 }
 
-/* mobile */
-@media (max-width: 800px) {
-    .profile-container {
-        flex-direction: column;
-    }
+.profile-container > * {
+    margin-bottom: 1em;
 }
 
 .profile-avatar {
@@ -18,6 +15,8 @@
 
 .profile-avatar-img {
     border-radius: 2em;
+    height: 23vh;
+    aspect-ratio: 1/1;
 }
 
 .profile-info {
@@ -31,4 +30,25 @@
 .user-posts ul {
     display: flex;
     justify-content: center;
+}
+
+.user-posts > h2 {
+    margin-bottom: 1em;
+}
+
+
+/* mobile */
+@media (max-width: 800px) {
+    .profile-container {
+        flex-direction: column;
+    }
+}
+
+/* desktop */
+@media (min-width: 800px) {
+    .profile-container {
+        margin-right: 35vw;
+        margin-left: 2em;
+        justify-content: space-between;
+    }
 }
