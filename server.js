@@ -51,6 +51,12 @@ app.engine(
                 }
                 return options.inverse(this);
             },
+            getPosts: function (username) {
+                return findPostsByUser(username);
+            },
+            getPostsLength: function (username) {
+                return findPostsByUser(username).length;
+            }
         },
     })
 );
@@ -130,7 +136,7 @@ app.post('/posts', (req, res) => {
     // TODO: Add a new post and redirect to home
 });
 app.post('/like/:id', (req, res) => {
-    // TODO: Update post likes
+    // Update post likes
     console.log("Id: ", req.params.id);
 
     const post = findPostById(parseInt(req.params.id));
@@ -140,14 +146,16 @@ app.post('/like/:id', (req, res) => {
     res.render("home", {posts: getPosts()});
 });
 app.get('/profile', isAuthenticated, (req, res) => {
-    // TODO: Render profile page
+    // Render profile page
+    const user = getCurrentUser(req) || {};
+    res.render('profile', {user});
 });
 app.get('/avatar/:username', (req, res) => {
     // TODO: Serve the avatar image for the user
     return handleAvatar(req, res);
 });
 app.post('/register', (req, res) => {
-    // TODO: Register a new user
+    // Register a new user
 
     const username = req.body.registerUsername;
 
@@ -160,7 +168,7 @@ app.post('/register', (req, res) => {
     loginUser(req, res, username);
 });
 app.post('/login', (req, res) => {
-    // TODO: Login a user
+    // Login a user
 
     const username = req.body.loginUsername;
 
@@ -174,7 +182,7 @@ app.post('/login', (req, res) => {
 
 
 app.get('/logout', (req, res) => {
-    // TODO: Logout the user
+    // Logout the user
     // clear the user from the session object and save.
     // this will ensure that re-using the old session id
     // does not have a logged in user
@@ -222,7 +230,7 @@ let users = [
 
 // Function to find a user by username
 function findUserByUsername(username) {
-    // TODO: Return user object if found, otherwise return undefined
+    // Return user object if found, otherwise return undefined
     for (const user of users) {
         if (user.username === username) {
             return user;
@@ -237,7 +245,7 @@ function findUserById(userId) {
 }
 
 function findPostById(postId) {
-    // TODO: Return post object if found, otherwise return undefined
+    // Return post object if found, otherwise return undefined
     for (const post of posts) {
         if (post.id === postId) {
             return post;
@@ -246,9 +254,21 @@ function findPostById(postId) {
     return undefined;
 }
 
+function findPostsByUser(username) {
+    // Return array of posts by username
+    const userPosts = [];
+    for (const post of posts) {
+        console.log(post, username);
+        if (post.username === username) {
+            userPosts.push(post);
+        }
+    }
+    return userPosts;
+}
+
 // Function to add a new user
 function addUser(username) {
-    // TODO: Create a new user object and add to users array
+    // Create a new user object and add to users array
 
     const id = users.length + 1;
     const avatar_url = undefined;
@@ -286,7 +306,7 @@ function registerUser(req, res) {
 
 // Function to login a user
 function loginUser(req, res, username) {
-    // TODO: Login a user and redirect appropriately
+    // Login a user and redirect appropriately
 
     // https://expressjs.com/en/resources/middleware/session.html
 
@@ -299,7 +319,9 @@ function loginUser(req, res, username) {
 
         // store user information in session, typically a user id
         req.session.user = findUserByUsername(username);
+        req.session.userId = req.session.user.id;
         req.session.loggedIn = true;
+
 
         // save the session before redirection to ensure page
         // load does not happen before session is saved
@@ -331,7 +353,7 @@ function updatePostLikes(req, res) {
 
 // Function to handle avatar generation and serving
 function handleAvatar(req, res) {
-    // TODO: Generate and serve the user's avatar image
+    // Generate and serve the user's avatar image
     res.set('Content-Type', 'image/png');
 
     const letter = req.params.username[0];
@@ -343,7 +365,7 @@ function handleAvatar(req, res) {
 
 // Function to get the current user from session
 function getCurrentUser(req) {
-    // TODO: Return the user object if the session user ID matches
+    // Return the user object if the session user ID matches
     return req.session.user;
 }
 
@@ -359,7 +381,7 @@ function addPost(title, content, user) {
 
 // Function to generate an image avatar
 function generateAvatar(letter, width = 100, height = 100) {
-    // TODO: Generate an avatar image with a letter
+    // Generate an avatar image with a letter
     // Steps:
     // 1. Choose a color scheme based on the letter
     // 2. Create a canvas with the specified width and height
