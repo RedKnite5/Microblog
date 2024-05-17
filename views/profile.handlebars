@@ -8,11 +8,11 @@
                     {{user.avatar_url}}
                 {{else}}
                     /avatar/{{user.username}}
-                {{/if}}" 
-                alt="User Avatar" 
+                {{/if}}"
+                alt="User Avatar"
                 class="profile-avatar-img">
     </div>
-    
+
     <section class="profile-info">
         <!-- user profile info -->
         <h1>User Profile</h1>
@@ -24,7 +24,7 @@
 <section class="user-posts">
     <!-- you can call posts tweets, or truths, or whatever, these are neologisms. Choose your own new in server.js -->
     <h2>Your {{{postNeoType}}}s</h2>
-    
+
     <!-- you'll need to make this conditaionl and #each expression work -->
     {{#if (getPostsLength user.username)}}
         <ul>

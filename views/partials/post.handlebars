@@ -6,8 +6,8 @@
                     {{this.avatar_url}}
                 {{else}}
                     /avatar/{{this.username}}
-                {{/if}}" 
-                alt="Poster's Avatar" 
+                {{/if}}"
+                alt="Poster's Avatar"
                 class="post-avatar-img">
     </div>
     <div class="post-content preserve-newlines">
@@ -17,7 +17,7 @@
         <hr>
         <div class="post-status-bar">
             <!-- everything that is shown in the status bar -->
-            
+
             {{#if loggedIn}}
                 {{#ifEq this.username user.username}}
                     <!-- font awesome  trashcan = <i class="fas fa-trash-alt"> </i>-->
@@ -46,14 +46,14 @@
     function handleLikeClick(event) {
         const postId = event.target.getAttribute('data-id');
 
-        // you might want to "fetch" something...        
+        // you might want to "fetch" something...
     }
 
     function handleDeleteClick(event) {
         const buttonElement = event.target.closest('.delete-button');
-        const postId = buttonElement.getAttribute('data-id');        
+        const postId = buttonElement.getAttribute('data-id');
 
-        // you might want to "fetch" something...        
-        
-    }    
+        // you might want to "fetch" something...
+
+    }
 </script>

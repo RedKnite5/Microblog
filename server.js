@@ -15,20 +15,20 @@ const PORT = 3000;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Handlebars Helpers
 
-    Handlebars helpers are custom functions that can be used within the templates 
-    to perform specific tasks. They enhance the functionality of templates and 
+    Handlebars helpers are custom functions that can be used within the templates
+    to perform specific tasks. They enhance the functionality of templates and
     help simplify data manipulation directly within the view files.
 
     In this project, two helpers are provided:
-    
+
     1. toLowerCase:
        - Converts a given string to lowercase.
        - Usage example: {{toLowerCase 'SAMPLE STRING'}} -> 'sample string'
 
     2. ifEq:
-       - Compares two values for equality and returns a block of content based on 
+       - Compares two values for equality and returns a block of content based on
          the comparison result.
-       - Usage example: 
+       - Usage example:
             {{#ifEq value1 value2}}
                 <!-- Content if value1 equals value2 -->
             {{else}}
@@ -79,8 +79,8 @@ app.use(
 );
 
 // Replace any of these variables below with constants for your application. These variables
-// should be used in your template files. 
-// 
+// should be used in your template files.
+//
 app.use((req, res, next) => {
     res.locals.appName = 'Y';
     res.locals.copyrightYear = 2024;
@@ -306,7 +306,7 @@ function getCurrentDateTime() {
     const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
-    
+
     return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
@@ -403,8 +403,8 @@ function getPosts() {
 function addPost(title, content, user) {
     // TODO: Create a new post object and add to posts array
     const new_id = getNextPostId();
-    posts.push({id: new_id, 
-                title: title, 
+    posts.push({id: new_id,
+                title: title,
                 content: content,
                 username: user.username,
                 timestamp: getCurrentDateTime(),
@@ -414,7 +414,7 @@ function addPost(title, content, user) {
 }
 
 // Function to generate an image avatar
-function generateAvatar(letter, width = 100, height = 100) {
+function generateAvatar(letter, width = 200, height = 200) {
     // Generate an avatar image with a letter
     // Steps:
     // 1. Choose a color scheme based on the letter
@@ -468,7 +468,7 @@ function generateAvatar(letter, width = 100, height = 100) {
     ctx.fillRect(0, 0, width, height);
 
     ctx.fillStyle = 'white';
-    ctx.font = '48px sans-serif';
+    ctx.font = (height / 2).toString() + 'px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const x = width / 2;

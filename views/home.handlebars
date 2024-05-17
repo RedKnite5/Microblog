@@ -52,7 +52,7 @@
 /*
  You want to show a subset of the emojis. About 200. However,
  you also want the user to be able to search all emojis,
- so, put them in this array when the array is empty so 
+ so, put them in this array when the array is empty so
  that you have them.
 */
 
@@ -88,15 +88,15 @@ function displayEmojis(emojis,limit=200) {
 function searchEmojis() {
     const searchTerm = document.getElementById('emoji-search').value.toLowerCase();
     // array.filter takes a predicate
-    // use string.includes. 
+    // use string.includes.
 
     const filteredEmojis = allEmojis.filter(...);
-    
+
     displayEmojis(filteredEmojis);
 }
 
 function insertEmoji(emoji) {
-    // put an emoji on a form somehow. 
+    // put an emoji on a form somehow.
 
     // do this when you're doing getting the emoji on the form
     //
