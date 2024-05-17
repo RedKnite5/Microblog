@@ -164,7 +164,7 @@ app.post('/register', (req, res) => {
     const username = req.body.registerUsername;
 
     if (findUserByUsername(username) !== undefined) {
-        res.redirect("/register?error=Username+alread+exists");
+        res.redirect("/register?error=Username+already+exists");
         return;
     }
 
@@ -213,7 +213,7 @@ app.post('/delete/:id', isAuthenticated, (req, res) => {
     console.log("deletion target: ", req.params.id);
     let del_id = parseInt(req.params.id);
     isAuthenticated(req, res, function(){
-        let del_ind = getPostByID(del_id);
+        let del_ind = getPostIndexByID(del_id);
         if(del_ind !== -1) {
             posts.splice(del_ind, 1);
         }
@@ -287,28 +287,6 @@ function findPostsByUser(username) {
     return userPosts;
 }
 
-function findPostById(postId) {
-    // Return post object if found, otherwise return undefined
-    for (const post of posts) {
-        if (post.id === postId) {
-            return post;
-        }
-    }
-    return undefined;
-}
-
-function findPostsByUser(username) {
-    // Return array of posts by username
-    const userPosts = [];
-    for (const post of posts) {
-        console.log(post, username);
-        if (post.username === username) {
-            userPosts.push(post);
-        }
-    }
-    return userPosts;
-}
-
 // Function to add a new user
 function addUser(username) {
     // Create a new user object and add to users array
@@ -345,7 +323,7 @@ function isAuthenticated(req, res, next) {
 // Function to register a user
 function registerUser(req, res) {
     const username = req.body.username;
-    if(findUserByUsername(username)) {
+    if (findUserByUsername(username)) {
         res.redirect('/register?error=Username+already+exists');
     } else {
         addUser(username);
@@ -396,7 +374,6 @@ function renderProfile(req, res) {
 // Function to update post likes
 function updatePostLikes(req, res) {
     // TODO: Increment post likes if conditions are met
-    let target_ind = getPostById
 }
 
 // Function to handle avatar generation and serving
@@ -425,7 +402,7 @@ function getPosts() {
 // Function to add a new post
 function addPost(title, content, user) {
     // TODO: Create a new post object and add to posts array
-    let new_id = getNextPostId();
+    const new_id = getNextPostId();
     posts.push({id: new_id, 
                 title: title, 
                 content: content,
@@ -502,11 +479,10 @@ function generateAvatar(letter, width = 100, height = 100) {
     return buf
 }
 
-function getPostByID(key) {
+function getPostIndexByID(key) {
     //Jack Wrote This
-    for(let i = 0; i < posts.length; i++) 
-    {
-        if(posts[i].id == key){
+    for(let i = 0; i < posts.length; i++) {
+        if (posts[i].id == key) {
             return i;
         }
     }
