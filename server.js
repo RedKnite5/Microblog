@@ -1,7 +1,8 @@
+const canvas = require('canvas');
 const express = require('express');
 const expressHandlebars = require('express-handlebars');
 const session = require('express-session');
-const canvas = require('canvas');
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
@@ -128,6 +129,9 @@ app.get('/post/:id', (req, res) => {
 });
 app.post('/posts', (req, res) => {
     // TODO: Add a new post and redirect to home
+    // Jack wrote this
+    addPost(req.body.title, req.body.content, getCurrentUser(req));
+    res.redirect('/');
 });
 app.post('/like/:id', (req, res) => {
     // TODO: Update post likes
@@ -188,10 +192,20 @@ app.get('/logout', (req, res) => {
         });
     });
 });
+
 app.post('/delete/:id', isAuthenticated, (req, res) => {
     // TODO: Delete a post if the current user is the owner
+    // Jack wrote this
+    console.log("deletion target: ", req.params.id);
+    let del_id = parseInt(req.params.id);
+    isAuthenticated(req, res, function(){
+        let del_ind = getPostByID(del_id);
+        if(del_ind !== -1) {
+            posts.splice(del_ind, 1);
+        }
+    });
+    res.redirect('/');
 });
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Server Activation
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -228,6 +242,14 @@ function findUserByUsername(username) {
 // Function to find a user by user ID
 function findUserById(userId) {
     // TODO: Return user object if found, otherwise return undefined
+    // Jack Wrote This
+    for(let i = 0; i < posts.length; i++) 
+        {
+            if(posts[i].id == userId){
+                return i;
+            }
+        }
+    return undefined;
 }
 
 // Function to add a new user
@@ -265,7 +287,13 @@ function isAuthenticated(req, res, next) {
 
 // Function to register a user
 function registerUser(req, res) {
-    // TODO: Register a new user and redirect appropriately
+    const username = req.body.username;
+    if(findUserByUsername(username)) {
+        res.redirect('/register?error=Username+already+exists');
+    } else {
+        addUser(username);
+        res.redirect('/login');
+    }
 }
 
 // Function to login a user
@@ -284,7 +312,7 @@ function loginUser(req, res, username) {
         // store user information in session, typically a user id
         req.session.user = findUserByUsername(username);
         req.session.loggedIn = true;
-
+        req.session.userId = req.session.user.id;
         // save the session before redirection to ensure page
         // load does not happen before session is saved
         req.session.save(function (err) {
@@ -309,7 +337,7 @@ function renderProfile(req, res) {
 // Function to update post likes
 function updatePostLikes(req, res) {
     // TODO: Increment post likes if conditions are met
-
+    let target_ind = getPostById
 }
 
 // Function to handle avatar generation and serving
@@ -338,6 +366,15 @@ function getPosts() {
 // Function to add a new post
 function addPost(title, content, user) {
     // TODO: Create a new post object and add to posts array
+    let new_id = getNextPostId();
+    posts.push({id: new_id, 
+                title: title, 
+                content: content,
+                username: user.username,
+                timestamp: getCurrentDateTime(),
+                likes: 0
+            });
+    console.log(posts);
 }
 
 // Function to generate an image avatar
@@ -354,7 +391,8 @@ function generateAvatar(letter, width = 100, height = 100) {
     const BRONZE = "#CD7F32";
     const PERIWINKLE = "#CCCCFF";
 
-    // TODO: test all of these work
+    // TODO: test all of these work (done)
+    // all of these work. q is now peachpuff since peach is not an html color
     const colors = {
         a: "red",
         b: "green",
@@ -372,7 +410,7 @@ function generateAvatar(letter, width = 100, height = 100) {
         n: "olive",
         o: "teal",
         p: "indigo",
-        q: "peach",
+        q: "peachpuff",
         r: "beige",
         s: "gold",
         t: SILVER,
@@ -405,3 +443,26 @@ function generateAvatar(letter, width = 100, height = 100) {
     return buf
 }
 
+function getPostByID(key) {
+    //Jack Wrote This
+    for(let i = 0; i < posts.length; i++) 
+    {
+        if(posts[i].id == key){
+            return i;
+        }
+    }
+    return undefined;
+}
+
+function getNextPostId() {
+    //Jack Wrote This
+    let ret = 1;
+    for(let i = 0; i < posts.length; i++)
+    {
+        if(posts[i].id !== ret) {
+            return ret;
+        }
+        ret++;
+    }
+    return ret;
+}
