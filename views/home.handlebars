@@ -12,7 +12,7 @@
                 <!-- title input field name = "title" -->
                 <input type="text" id="post-title-input" name="title" placeholder="Title">
                 <!-- text area input field name = "content" -->
-                <textarea id="post-content-input" rows="10" cols="70" name="content"></textarea>
+                <textarea id="post-content-input" rows="10" name="content"></textarea>
 
 
                 <div class="form-actions">
@@ -22,7 +22,7 @@
             </form>
 
             <div id="emoji-container" class="emoji-panel" style="display: none;">
-                <input type = "text" id = "emoji-search" rows = "1" cols = "20" oninput="searchEmojis()">
+                <input type = "text" id = "emoji-search" rows = "1" oninput="searchEmojis()">
                 <div id = "emoji-grid"></div>
             </div>
         </section>
@@ -59,42 +59,44 @@
 let allEmojis = [];  // Global list to hold all emojis
 
 const getEmojis = async() => {
-    let emoji_data = await fetch('https://emoji-api.com/emojis?access_key=8e8233ff8ad6967ddee104e2e2b8b6b206b096f3');
+    const emoji_data = await fetch("https://emoji-api.com/emojis?access_key=8e8233ff8ad6967ddee104e2e2b8b6b206b096f3");
     allEmojis = await emoji_data.json();
 }
 
 //not wild about this solution, but the way i see it if this calls getEmojis it HAS to be async
 //potential other option: call getEmojis on load -Jack
 async function toggleEmojiPanel() {
-    const container = document.getElementById('emoji-container');
-    container.style.display = container.style.display === 'none' ? 'block' : 'none';
+    const container = document.getElementById("emoji-container");
+    container.style.display = container.style.display === "none" ? "block" : "none";
 
-    if(container.style.display === 'block' && allEmojis.length == 0){
+    if (container.style.display === "block" && allEmojis.length == 0) {
         // go "Fetch" you some emojis and show them off with displayEmojies
         await getEmojis();
         displayEmojis(allEmojis);
     }
 }
 
-function displayEmojis(emojis,limit=200) {
-    const container = document.getElementById('emoji-grid');
-    container.innerHTML = '';  // Clear previous results
+function displayEmojis(emojis, limit=200) {
+    const container = document.getElementById("emoji-grid");
+    container.replaceChildren();  // Clear previous results
     if (Array.isArray(emojis) && emojis.length > 0) {
         emojis.slice(0, limit).forEach(emoji => {
-            const emojiElement = document.createElement('span');
+            const emojiElement = document.createElement("span");
             emojiElement.textContent = emoji.character;
             emojiElement.title = emoji.slug;  // Showing the emoji name on hover
-            emojiElement.style.cursor = 'pointer';
+            emojiElement.style.cursor = "pointer";
             emojiElement.onclick = () => insertEmoji(emoji.character);
             container.appendChild(emojiElement);
         });
     } else {
-        container.textContent = 'No emojis found. Try a different search!';
+        const paragraph = document.createElement("p");
+        paragraph.textContent = "No emojis found. Try a different search!";
+        container.appendChild(paragraph);
     }
 }
 
 function searchEmojis() {
-    const searchTerm = document.getElementById('emoji-search').value.toLowerCase();
+    const searchTerm = document.getElementById("emoji-search").value.toLowerCase();
     // array.filter takes a predicate
     // use string.includes. 
     const filteredEmojis = allEmojis.filter(emj => emj.slug.includes(searchTerm));
@@ -102,7 +104,7 @@ function searchEmojis() {
 }
 
 function insertEmoji(emoji) {
-    let textarea = document.getElementById('post-content-input');
+    const textarea = document.getElementById("post-content-input");
     // put an emoji on a form somehow. 
     textarea.value += emoji;
     // do this when you're doing getting the emoji on the form
