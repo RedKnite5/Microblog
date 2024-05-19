@@ -36,6 +36,13 @@ header {
     align-items: center;
 }
 
+.header-logo {
+    height: 1.8em;
+    aspect-ratio: 1/1;
+    border-radius: .3em;
+    margin-right: .5em;
+}
+
 nav {
     display: flex;
     align-items: center;

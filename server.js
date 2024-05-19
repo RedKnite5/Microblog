@@ -2,6 +2,7 @@ const canvas = require("canvas");
 const express = require("express");
 const expressHandlebars = require("express-handlebars");
 const session = require("express-session");
+const favicon = require('serve-favicon');
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -82,7 +83,7 @@ app.use(
 // should be used in your template files.
 //
 app.use((req, res, next) => {
-    res.locals.appName = "Y";
+    res.locals.appName = "Basic Blog";
     res.locals.copyrightYear = 2024;
     res.locals.postNeoType = "Post";
     res.locals.loggedIn = req.session.loggedIn || false;
@@ -94,6 +95,8 @@ app.use((req, res, next) => {
 app.use(express.static("public"));                  // Serve static files
 app.use(express.urlencoded({ extended: true }));    // Parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.json());                            // Parse JSON bodies (as sent by API clients)
+
+app.use(favicon(__dirname + "/public/images/favicon.ico"));
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Routes
