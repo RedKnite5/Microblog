@@ -132,14 +132,22 @@ app.get("/error", (req, res) => {
 
 app.get("/post/:id", (req, res) => {
     // TODO: Render post detail page
+    const post = findPostById(req.params.id);
+    const user = req.session.user;
+    const loggedIn = req.session.loggedIn;
+    
+
+    // something...
+
 });
-app.post("/posts", (req, res) => {
-    // TODO: Add a new post and redirect to home
+
+app.post("/posts", isAuthenticated, (req, res) => {
+    // Add a new post and redirect to home
     // Jack wrote this
     addPost(req.body.title, req.body.content, getCurrentUser(req));
     res.redirect("/");
 });
-app.post("/like/:id", (req, res) => {
+app.post("/like/:id", isAuthenticated, (req, res) => {
     // Update post likes
     console.log("Id: ", req.params.id);
 
@@ -155,7 +163,7 @@ app.get("/profile", isAuthenticated, (req, res) => {
     res.render("profile", {user});
 });
 app.get("/avatar/:username", (req, res) => {
-    // TODO: Serve the avatar image for the user
+    // Serve the avatar image for the user
     return handleAvatar(req, res);
 });
 app.post("/register", (req, res) => {
@@ -185,7 +193,7 @@ app.post("/login", (req, res) => {
 });
 
 
-app.get("/logout", (req, res) => {
+app.get("/logout", isAuthenticated, (req, res) => {
     // Logout the user
     // clear the user from the session object and save.
     // this will ensure that re-using the old session id
