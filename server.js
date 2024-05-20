@@ -134,7 +134,7 @@ app.get("/error", (req, res) => {
 
 
 app.get("/post/:id", (req, res) => {
-    // TODO: Render post detail page
+    // Render post detail page
     const post = findPostById(parseInt(req.params.id));
     const user = req.session.user;
     const loggedIn = req.session.loggedIn;
@@ -213,7 +213,7 @@ app.get("/logout", isAuthenticated, (req, res) => {
 });
 
 app.post("/delete/:id", isAuthenticated, (req, res) => {
-    // TODO: Delete a post if the current user is the owner
+    // Delete a post if the current user is the owner
     // Jack wrote this
     console.log("deletion target: ", req.params.id);
     let del_id = parseInt(req.params.id);
@@ -260,7 +260,7 @@ function findUserByUsername(username) {
 
 // Function to find a user by user ID
 function findUserById(userId) {
-    // TODO: Return user object if found, otherwise return undefined
+    // Return user object if found, otherwise return undefined
     // Jack Wrote This
     for(let i = 0; i < posts.length; i++) {
             if(posts[i].id == userId){
@@ -405,7 +405,7 @@ function getPosts() {
 
 // Function to add a new post
 function addPost(title, content, user) {
-    // TODO: Create a new post object and add to posts array
+    // Create a new post object and add to posts array
     const new_id = getNextPostId();
     posts.push({id: new_id,
                 title: title,
@@ -431,7 +431,7 @@ function generateAvatar(letter, width = 200, height = 200) {
     const BRONZE = "#CD7F32";
     const PERIWINKLE = "#CCCCFF";
 
-    // TODO: test all of these work (done)
+    // test all of these work (done)
     // all of these work. q is now peachpuff since peach is not an html color
     const colors = {
         a: "red",
