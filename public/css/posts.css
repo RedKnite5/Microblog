@@ -24,6 +24,10 @@
     justify-content: space-between;
 }
 
+.post-status-bar > * {
+    margin-left: .2em;
+}
+
 .icon-button {
     color: var(--accent-color);
     background-color: inherit;
