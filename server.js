@@ -88,7 +88,7 @@ app.use((req, res, next) => {
     res.locals.postNeoType = "Post";
     res.locals.loggedIn = req.session.loggedIn || false;
     res.locals.userId = req.session.userId || "";
-    res.locals.user =  {data: 69};
+    res.locals.user = {};
     next();
 });
 
@@ -135,13 +135,11 @@ app.get("/error", (req, res) => {
 
 app.get("/post/:id", (req, res) => {
     // TODO: Render post detail page
-    const post = findPostById(req.params.id);
+    const post = findPostById(parseInt(req.params.id));
     const user = req.session.user;
     const loggedIn = req.session.loggedIn;
     
-
-    // something...
-
+    res.render("post_page", {current: post, user: user, loggedIn: loggedIn});
 });
 
 app.post("/posts", isAuthenticated, (req, res) => {
@@ -158,7 +156,9 @@ app.post("/like/:id", isAuthenticated, (req, res) => {
     console.log(post);
     post.likes += 1;
 
-    res.render("home", {posts: getPosts()});
+    const posts = getPosts();
+    const user = getCurrentUser(req) || {};
+    res.render("home", {posts, user});
 });
 app.get("/profile", isAuthenticated, (req, res) => {
     // Render profile page

@@ -63,9 +63,12 @@ li {
     align-items: center;
 }
 
-li a {
+a {
     text-decoration: inherit;
     color: black;
+}
+
+li a {
     height: 100%;
     padding-left: .5em;
     padding-right: .5em;
@@ -114,6 +117,16 @@ footer {
 
 footer p {
     margin: 0;
+}
+
+
+
+
+.post-page {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
 }
 
 
