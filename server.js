@@ -150,15 +150,9 @@ app.post("/posts", isAuthenticated, (req, res) => {
 });
 app.post("/like/:id", isAuthenticated, (req, res) => {
     // Update post likes
-    console.log("Id: ", req.params.id);
-
     const post = findPostById(parseInt(req.params.id));
     console.log(post);
     post.likes += 1;
-
-    const posts = getPosts();
-    const user = getCurrentUser(req) || {};
-    res.render("home", {posts, user});
 });
 app.get("/profile", isAuthenticated, (req, res) => {
     // Render profile page
@@ -359,7 +353,6 @@ function loginUser(req, res, username) {
         req.session.user = findUserByUsername(username);
         req.session.userId = req.session.user.id;
         req.session.loggedIn = true;
-
 
         // save the session before redirection to ensure page
         // load does not happen before session is saved
