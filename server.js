@@ -152,8 +152,13 @@ app.post("/posts", isAuthenticated, (req, res) => {
 app.post("/like/:id", isAuthenticated, (req, res) => {
     // Update post likes
     const post = findPostById(parseInt(req.params.id));
-    console.log(post);
-    post.likes += 1;
+    const postUser = findUserByUsername(post.username);
+    if (parseInt(req.session.userId) !== postUser.id) {
+        post.likes += 1;
+        console.log("liked");
+    } else {
+        console.log("like blocked for own post by user: " + req.session.userId);
+    }
 });
 app.get("/profile", isAuthenticated, (req, res) => {
     // Render profile page
@@ -217,9 +222,17 @@ app.post("/delete/:id", isAuthenticated, (req, res) => {
     // Delete a post if the current user is the owner
     // Jack wrote this
     console.log("deletion target: ", req.params.id);
-    let del_id = parseInt(req.params.id);
+    const del_id = parseInt(req.params.id);
+
+    const post = findPostById(del_id);
+    const poster = findUserByUsername(post.username);
+    if (parseInt(req.session.userId) !== poster.id) {
+        console.log("delete blocked by user: " + req.session.userId);
+        return;
+    }
+
     isAuthenticated(req, res, function(){
-        let del_ind = getPostIndexByID(del_id);
+        const del_ind = getPostIndexByID(del_id);
         if(del_ind !== -1) {
             posts.splice(del_ind, 1);
         }
