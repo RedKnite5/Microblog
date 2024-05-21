@@ -2,8 +2,11 @@ const canvas = require("canvas");
 const express = require("express");
 const expressHandlebars = require("express-handlebars");
 const session = require("express-session");
-const favicon = require('serve-favicon');
-const process = require('node:process');
+const favicon = require("serve-favicon");
+const process = require("node:process");
+
+require("dotenv").config();
+const accessToken = process.env.EMOJI_API_KEY;
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -110,8 +113,9 @@ app.use(favicon(__dirname + "/public/images/favicon.ico"));
 app.get("/", (req, res) => {
     const posts = getPosts();
     const user = getCurrentUser(req) || {};
-    res.render("home", { posts, user });
+    res.render("home", { posts, user, accessToken });
 });
+
 
 // Register GET route is used for error response from registration
 //
