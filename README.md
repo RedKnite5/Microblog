@@ -39,7 +39,7 @@ This project is a simplified clone of Twitter, created as part of a web programm
 
 4. **Start the development server:**
    ```bash
-   npm run dev
+   node server.js
    ```
 
 5. **Access the application:**
