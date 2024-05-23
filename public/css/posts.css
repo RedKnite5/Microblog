@@ -25,7 +25,11 @@
 }
 
 .post-status-bar > * {
-    margin-left: .2em;
+    margin-left: 1em;
+}
+
+.post-status-bar > :first-child {
+    margin-left: 0;
 }
 
 .icon-button {
