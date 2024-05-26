@@ -21,6 +21,8 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const app = express();
 const PORT = 3000;
 
+let allEmojis = [];  // Global list to hold all emojis
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Handlebars Helpers
@@ -239,7 +241,6 @@ app.get("/logout", isAuthenticated, (req, res) => {
 app.post("/delete/:id", isAuthenticated, async (req, res) => {
     // Delete a post if the current user is the owner
     // Jack wrote this
-    console.log("deletion target: ", req.params.id);
     const del_id = parseInt(req.params.id);
 
     const post = await findPostById(del_id);
@@ -264,6 +265,12 @@ app.post("/delete/:id", isAuthenticated, async (req, res) => {
     res.redirect("/");
 });
 
+
+app.get("/emojis", (req, res) => {
+    // Serve the emojis
+    res.json(allEmojis);
+});
+
 app.get("/auth/google", (req, res) => {
     const url = "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id="
         + CLIENT_ID
@@ -281,11 +288,8 @@ app.get("/auth/google/callback",
         hash.update(googleId);
         const hashedGoogleId = hash.digest("hex");
 
-        const user = await findUserByGoogleId(hashedGoogleId);
-
         req.session.hashedGoogleId = hashedGoogleId;
-        console.log("logging in user: ", user);
-
+        const user = await findUserByGoogleId(hashedGoogleId);
 
         if (user === undefined) {
             res.redirect("/register");
@@ -314,7 +318,10 @@ passport.deserializeUser((obj, done) => {
     done(null, obj);
 });
 
-
+async function getEmojis() {
+    const emoji_data = await fetch("https://emoji-api.com/emojis?access_key=" + accessToken);
+    allEmojis = await emoji_data.json();
+}
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -326,6 +333,8 @@ async function activate() {
     db = await sqlite.open(
         {filename: "database.db", driver: sqlite3.Database}
     );
+
+    await getEmojis();
 
     app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);
@@ -360,7 +369,6 @@ async function findUserByUsername(username) {
 
 async function findUserByGoogleId(googleId) {
     // Return user object if found, otherwise return undefined
-    console.log("googleId: ", googleId);
     return await db.get("SELECT * FROM users WHERE hashedGoogleId = $googleId", {
         $googleId: googleId,
     });
@@ -447,7 +455,6 @@ async function registerUser(req, res) {
 // Function to login a user
 function loginUser(req, res, username) {
     // Login a user and redirect appropriately
-    console.log("loginUser");
 
     // https://expressjs.com/en/resources/middleware/session.html
 
@@ -521,7 +528,6 @@ async function addPost(title, content, user) {
     const columns = "(title, content, username, timestamp, likes)";
     const values = "($title, $content, $username, $timestamp, $likes)";
     const query = `INSERT INTO posts ${columns} VALUES ${values}`;
-    console.log("query: ", query);
 
     await db.run(query, {
         $title: title,

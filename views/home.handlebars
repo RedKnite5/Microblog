@@ -58,10 +58,8 @@
 
 let allEmojis = [];  // Global list to hold all emojis
 
-const accessToken = "{{{accessToken}}}"; // this is very insecure
-
 const getEmojis = async() => {
-    const emoji_data = await fetch("https://emoji-api.com/emojis?access_key=" + accessToken);
+    const emoji_data = await fetch("/emojis");
     allEmojis = await emoji_data.json();
 }
 
