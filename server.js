@@ -4,11 +4,11 @@ const expressHandlebars = require("express-handlebars");
 const session = require("express-session");
 const favicon = require("serve-favicon");
 const process = require("node:process");
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const crypto = require('crypto');
-const sqlite = require('sqlite');
-const sqlite3 = require('sqlite3');
+const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const crypto = require("crypto");
+const sqlite = require("sqlite");
+const sqlite3 = require("sqlite3");
 require("dotenv").config();
 const accessToken = process.env.EMOJI_API_KEY;
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -176,10 +176,11 @@ app.post("/like/:id", isAuthenticated, async (req, res) => {
         console.log("like blocked for own post by user: " + req.session.userId);
     }
 });
-app.get("/profile", isAuthenticated, (req, res) => {
+app.get("/profile", isAuthenticated, async (req, res) => {
     // Render profile page
     const user = getCurrentUser(req) || {};
-    res.render("profile", {user});
+    const posts = await getPosts();
+    res.render("profile", {user, posts});
 });
 app.get("/avatar/:username", (req, res) => {
     // Serve the avatar image for the user
@@ -248,27 +249,35 @@ app.post("/delete/:id", isAuthenticated, async (req, res) => {
         return;
     }
 
+    db.run("DELETE FROM posts WHERE id = $id", {
+        $id: del_id
+    });
+
+    /*
     isAuthenticated(req, res, function(){
         const del_ind = getPostIndexByID(del_id);
         if(del_ind !== -1) {
             posts.splice(del_ind, 1);
         }
     });
+    */
     res.redirect("/");
 });
 
 app.get("/auth/google", (req, res) => {
     const url = "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id="
-    + CLIENT_ID
-    + "&redirect_uri=http://localhost:3000/auth/google/callback&scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile&prompt=consent"
+        + CLIENT_ID
+        + "&redirect_uri=http://localhost:"
+        + PORT.toString()
+        + "/auth/google/callback&scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile&prompt=consent";
     res.redirect(url);
 });
 
 app.get("/auth/google/callback", 
-    passport.authenticate('google', { failureRedirect: '/' }),
+    passport.authenticate("google", { failureRedirect: "/" }),
     async (req, res) => {
         const googleId = req.user.id;
-        const hash = crypto.createHash('sha256');
+        const hash = crypto.createHash("sha256");
         hash.update(googleId);
         const hashedGoogleId = hash.digest("hex");
 
@@ -465,6 +474,7 @@ function loginUser(req, res, username) {
     });
 }
 
+/*
 // Function to logout a user
 function logoutUser(req, res) {
     // TODO: Destroy session and redirect appropriately
@@ -479,6 +489,7 @@ function renderProfile(req, res) {
 function updatePostLikes(req, res) {
     // TODO: Increment post likes if conditions are met
 }
+*/
 
 // Function to handle avatar generation and serving
 function handleAvatar(req, res) {

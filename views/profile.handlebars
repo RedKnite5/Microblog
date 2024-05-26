@@ -27,15 +27,18 @@
         <h2>Your {{{postNeoType}}}s</h2>
 
         <!-- you'll need to make this conditaionl and #each expression work -->
-        {{#if (getPostsLength user.username)}}
-            <ul>
-                {{#each (getPosts user.username)}}
-                    {{> post this user=../user loggedIn=true}}
-                {{/each}}
-            </ul>
-        {{else}}
+        <!-- Need a way to check how many posts the user has made -->
+        {{#if 0}}
             <!-- fix this up with some helper functions and other handlebars expressions, or add you own character -->
             <p class="no-posts-alert">You have not posted yet, poster.</p>
+        {{else}}
+            <ul>
+                {{#each posts}}
+                    {{#ifEq this.username ../user.username}}
+                        {{> post this user=../user loggedIn=true}}
+                    {{/ifEq}}
+                {{/each}}
+            </ul>
         {{/if}}
     </section>
 </section>
