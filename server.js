@@ -4,10 +4,15 @@ const expressHandlebars = require("express-handlebars");
 const session = require("express-session");
 const favicon = require("serve-favicon");
 const process = require("node:process");
-
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const crypto = require('crypto');
+const sqlite = require('sqlite');
+const sqlite3 = require('sqlite3');
 require("dotenv").config();
 const accessToken = process.env.EMOJI_API_KEY;
-
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
@@ -93,6 +98,7 @@ app.use((req, res, next) => {
     res.locals.loggedIn = req.session.loggedIn || false;
     res.locals.userId = req.session.userId || "";
     res.locals.user = {};
+    res.locals.hashedGoogleId = null;
     next();
 });
 
@@ -110,8 +116,8 @@ app.use(favicon(__dirname + "/public/images/favicon.ico"));
 // We pass the posts and user variables into the home
 // template
 //
-app.get("/", (req, res) => {
-    const posts = getPosts();
+app.get("/", async (req, res) => {
+    const posts = await getPosts();
     const user = getCurrentUser(req) || {};
     res.render("home", { posts, user, accessToken });
 });
@@ -120,13 +126,17 @@ app.get("/", (req, res) => {
 // Register GET route is used for error response from registration
 //
 app.get("/register", (req, res) => {
-    res.render("loginRegister", { regError: req.query.error });
+    if (req.query.error !== undefined) {
+        res.render("register", { regError: req.query.error });
+        return;
+    }
+    res.render("register");
 });
 
 // Login route GET route is used for error response from login
 //
 app.get("/login", (req, res) => {
-    res.render("loginRegister", { loginError: req.query.error });
+    res.render("login", { loginError: req.query.error });
 });
 
 // Error route: render error page
@@ -138,9 +148,9 @@ app.get("/error", (req, res) => {
 // Additional routes that you must implement
 
 
-app.get("/post/:id", (req, res) => {
+app.get("/post/:id", async (req, res) => {
     // Render post detail page
-    const post = findPostById(parseInt(req.params.id));
+    const post = await findPostById(parseInt(req.params.id));
     const user = req.session.user;
     const loggedIn = req.session.loggedIn;
     
@@ -153,10 +163,10 @@ app.post("/posts", isAuthenticated, (req, res) => {
     addPost(req.body.title, req.body.content, getCurrentUser(req));
     res.redirect("/");
 });
-app.post("/like/:id", isAuthenticated, (req, res) => {
+app.post("/like/:id", isAuthenticated, async (req, res) => {
     // Update post likes
-    const post = findPostById(parseInt(req.params.id));
-    const postUser = findUserByUsername(post.username);
+    const post = await findPostById(parseInt(req.params.id));
+    const postUser = await findUserByUsername(post.username);
     if (parseInt(req.session.userId) !== postUser.id) {
         post.likes += 1;
         console.log("liked");
@@ -173,25 +183,25 @@ app.get("/avatar/:username", (req, res) => {
     // Serve the avatar image for the user
     return handleAvatar(req, res);
 });
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
     // Register a new user
 
     const username = req.body.registerUsername;
 
-    if (findUserByUsername(username) !== undefined) {
+    if (await findUserByUsername(username) !== undefined) {
         res.redirect("/register?error=Username+already+exists");
         return;
     }
 
-    addUser(username);
+    await addUser(username, req.session.hashedGoogleId);
     loginUser(req, res, username);
 });
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
     // Login a user
 
     const username = req.body.loginUsername;
 
-    if (findUserByUsername(username) === undefined) {
+    if (await findUserByUsername(username) === undefined) {
         res.redirect("/login?error=Username+does+not+exist");
         return;
     }
@@ -222,14 +232,14 @@ app.get("/logout", isAuthenticated, (req, res) => {
     });
 });
 
-app.post("/delete/:id", isAuthenticated, (req, res) => {
+app.post("/delete/:id", isAuthenticated, async (req, res) => {
     // Delete a post if the current user is the owner
     // Jack wrote this
     console.log("deletion target: ", req.params.id);
     const del_id = parseInt(req.params.id);
 
-    const post = findPostById(del_id);
-    const poster = findUserByUsername(post.username);
+    const post = await findPostById(del_id);
+    const poster = await findUserByUsername(post.username);
     if (parseInt(req.session.userId) !== poster.id) {
         console.log("delete blocked by user: " + req.session.userId);
         return;
@@ -243,19 +253,83 @@ app.post("/delete/:id", isAuthenticated, (req, res) => {
     });
     res.redirect("/");
 });
+
+app.get("/auth/google", (req, res) => {
+    const url = "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id="
+    + CLIENT_ID
+    + "&redirect_uri=http://localhost:3000/auth/google/callback&scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile&prompt=consent"
+    res.redirect(url);
+});
+
+app.get("/auth/google/callback", 
+    passport.authenticate('google', { failureRedirect: '/' }),
+    async (req, res) => {
+        const googleId = req.user.id;
+        const hash = crypto.createHash('sha256');
+        hash.update(googleId);
+        const hashedGoogleId = hash.digest("hex");
+
+        // if user exists then log them in
+        // else redirect to register.
+
+        const user = await findUserByGoogleId(hashedGoogleId);
+
+        req.session.hashedGoogleId = hashedGoogleId;
+        console.log("logging in user: ", user);
+
+
+        if (user === undefined) {
+            res.redirect("/register");
+            return;
+        }
+
+        loginUser(req, res, user.username);
+        //res.redirect("/");
+    }
+);
+
+
+// Configure passport
+passport.use(new GoogleStrategy({
+    clientID: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
+    callbackURL: `http://localhost:${PORT}/auth/google/callback`
+}, (token, tokenSecret, profile, done) => {
+    return done(null, profile);
+}));
+
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((obj, done) => {
+    done(null, obj);
+});
+
+
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Server Activation
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+let db = null
+async function activate() {
+    db = await sqlite.open({ filename: "database.db", driver: sqlite3.Database });
+
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
+}
+activate();
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Support Functions and Variables
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Example data for posts and users
+/*
 let posts = [
     { id: 1, title: "Sample Post", content: "This is a sample post.", username: "SampleUser", timestamp: "2024-01-01 10:00", likes: 0 },
     { id: 2, title: "Another Post", content: "This is another sample post.", username: "AnotherUser", timestamp: "2024-01-02 12:00", likes: 0 },
@@ -264,17 +338,24 @@ let users = [
     { id: 1, username: "SampleUser", avatar_url: undefined, memberSince: "2024-01-01 08:00" },
     { id: 2, username: "AnotherUser", avatar_url: undefined, memberSince: "2024-01-02 09:00" },
 ];
+*/
 
 // Function to find a user by username
-function findUserByUsername(username) {
+async function findUserByUsername(username) {
     // Return user object if found, otherwise return undefined
-    for (const user of users) {
-        if (user.username === username) {
-            return user;
-        }
-    }
-    return undefined;
+    return await db.get("SELECT * FROM users WHERE username = $username", {
+        $username: username,
+    });
 }
+
+async function findUserByGoogleId(googleId) {
+    // Return user object if found, otherwise return undefined
+    console.log("googleId: ", googleId);
+    return await db.get("SELECT * FROM users WHERE hashedGoogleId = $googleId", {
+        $googleId: googleId,
+    });
+}
+
 
 // Function to find a user by user ID
 function findUserById(userId) {
@@ -288,38 +369,36 @@ function findUserById(userId) {
     return undefined;
 }
 
-function findPostById(postId) {
+async function findPostById(postId) {
     // Return post object if found, otherwise return undefined
-    for (const post of posts) {
-        if (post.id === postId) {
-            return post;
-        }
-    }
-    return undefined;
+    return await db.get("SELECT * FROM posts WHERE id = $id", {
+        $id: postId,
+    });
 }
 
-function findPostsByUser(username) {
+async function findPostsByUser(username) {
     // Return array of posts by username
-    const userPosts = [];
-    for (const post of posts) {
-        console.log(post, username);
-        if (post.username === username) {
-            userPosts.push(post);
-        }
-    }
-    return userPosts;
+    return await db.all("SELECT * FROM posts WHERE username = $username", {
+        $username: username,
+    });
 }
 
 // Function to add a new user
-function addUser(username) {
+async function addUser(username, hashedGoogleId) {
     // Create a new user object and add to users array
 
-    const id = users.length + 1;
     const avatar_url = undefined;
     const memberSince = getCurrentDateTime();
 
-    const user = {id: id, username: username, avatar_url: avatar_url, memberSince: memberSince};
-    users.push(user);
+    console.log("inserting ID: ", hashedGoogleId);
+
+    await db.run("INSERT INTO users (username, avatar_url, hashedGoogleId, memberSince) VALUES ($username, $avatar_url, $hashedGoogleId, $memberSince)", {
+        $username: username,
+        $avatar_url: avatar_url,
+        $hashedGoogleId: hashedGoogleId,
+        $memberSince: memberSince
+    });
+
 }
 
 function getCurrentDateTime() {
@@ -344,9 +423,9 @@ function isAuthenticated(req, res, next) {
 }
 
 // Function to register a user
-function registerUser(req, res) {
+async function registerUser(req, res) {
     const username = req.body.username;
-    if (findUserByUsername(username)) {
+    if (await findUserByUsername(username)) {
         res.redirect("/register?error=Username+already+exists");
     } else {
         addUser(username);
@@ -357,20 +436,22 @@ function registerUser(req, res) {
 // Function to login a user
 function loginUser(req, res, username) {
     // Login a user and redirect appropriately
+    console.log("loginUser");
 
     // https://expressjs.com/en/resources/middleware/session.html
 
     // regenerate the session, which is good practice to help
     // guard against forms of session fixation
-    req.session.regenerate(function (err) {
+    req.session.regenerate(async function (err) {
         if (err) {
             next(err);
         }
 
         // store user information in session, typically a user id
-        req.session.user = findUserByUsername(username);
+        req.session.user = await findUserByUsername(username);
         req.session.userId = req.session.user.id;
         req.session.loggedIn = true;
+        //session.hashedGoogleId = hashedGoogleId;
 
         // save the session before redirection to ensure page
         // load does not happen before session is saved
@@ -417,8 +498,9 @@ function getCurrentUser(req) {
 }
 
 // Function to get all posts, sorted by latest first
-function getPosts() {
-    return posts.slice().reverse();
+async function getPosts() {
+    const posts = await db.all("SELECT * FROM posts ORDER BY id");
+    return posts;
 }
 
 // Function to add a new post
@@ -432,7 +514,6 @@ function addPost(title, content, user) {
                 timestamp: getCurrentDateTime(),
                 likes: 0
             });
-    console.log(posts);
 }
 
 // Function to generate an image avatar
