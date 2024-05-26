@@ -127,12 +127,12 @@ app.get("/", async (req, res) => {
 
 // Register GET route is used for error response from registration
 //
-app.get("/register", (req, res) => {
+app.get("/registerUsername", (req, res) => {
     if (req.query.error !== undefined) {
-        res.render("register", { regError: req.query.error });
+        res.render("registerUsername", { regError: req.query.error });
         return;
     }
-    res.render("register");
+    res.render("registerUsername");
 });
 
 // Login route GET route is used for error response from login
@@ -188,13 +188,13 @@ app.get("/avatar/:username", (req, res) => {
     // Serve the avatar image for the user
     return handleAvatar(req, res);
 });
-app.post("/register", async (req, res) => {
+app.post("/registerUsername", async (req, res) => {
     // Register a new user
 
     const username = req.body.registerUsername;
 
     if (await findUserByUsername(username) !== undefined) {
-        res.redirect("/register?error=Username+already+exists");
+        res.redirect("/registerUsername?error=Username+already+exists");
         return;
     }
 
@@ -253,15 +253,6 @@ app.post("/delete/:id", isAuthenticated, async (req, res) => {
     db.run("DELETE FROM posts WHERE id = $id", {
         $id: del_id
     });
-
-    /*
-    isAuthenticated(req, res, function(){
-        const del_ind = getPostIndexByID(del_id);
-        if(del_ind !== -1) {
-            posts.splice(del_ind, 1);
-        }
-    });
-    */
     res.redirect("/");
 });
 
@@ -276,7 +267,8 @@ app.get("/auth/google", (req, res) => {
         + CLIENT_ID
         + "&redirect_uri=http://localhost:"
         + PORT.toString()
-        + "/auth/google/callback&scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile&prompt=consent";
+        + "/auth/google/callback&scope=https://www.googleapis.com/auth/userinfo.email "
+        + "https://www.googleapis.com/auth/userinfo.profile&prompt=consent";
     res.redirect(url);
 });
 
@@ -292,7 +284,7 @@ app.get("/auth/google/callback",
         const user = await findUserByGoogleId(hashedGoogleId);
 
         if (user === undefined) {
-            res.redirect("/register");
+            res.redirect("/registerUsername");
             return;
         }
 
@@ -346,18 +338,6 @@ activate();
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Support Functions and Variables
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// Example data for posts and users
-/*
-let posts = [
-    { id: 1, title: "Sample Post", content: "This is a sample post.", username: "SampleUser", timestamp: "2024-01-01 10:00", likes: 0 },
-    { id: 2, title: "Another Post", content: "This is another sample post.", username: "AnotherUser", timestamp: "2024-01-02 12:00", likes: 0 },
-];
-let users = [
-    { id: 1, username: "SampleUser", avatar_url: undefined, memberSince: "2024-01-01 08:00" },
-    { id: 2, username: "AnotherUser", avatar_url: undefined, memberSince: "2024-01-02 09:00" },
-];
-*/
 
 // Function to find a user by username
 async function findUserByUsername(username) {
@@ -585,7 +565,6 @@ function generateAvatar(letter, width = 200, height = 200) {
 
     const color = colors[letter.toLowerCase()];
 
-
     const can = canvas.createCanvas(width, height)
     const ctx = can.getContext("2d")
 
@@ -604,16 +583,7 @@ function generateAvatar(letter, width = 200, height = 200) {
     return buf
 }
 
-function getPostIndexByID(key) {
-    //Jack Wrote This
-    for(let i = 0; i < posts.length; i++) {
-        if (posts[i].id == key) {
-            return i;
-        }
-    }
-    return undefined;
-}
-
+/*
 function getNextPostId() {
     //Jack Wrote This
     let ret = 1;
@@ -625,3 +595,4 @@ function getNextPostId() {
     }
     return ret;
 }
+*/
