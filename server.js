@@ -63,10 +63,10 @@ app.engine(
                 }
                 return options.inverse(this);
             },
-            getPosts: function (username) {
+            getUsersPosts: function (username) {
                 return findPostsByUser(username);
             },
-            getPostsLength: function (username) {
+            getUsersPostsLength: function (username) {
                 return findPostsByUser(username).length;
             }
         },
@@ -125,7 +125,7 @@ app.get("/", async (req, res) => {
     const sortCriteria = req.session.sortCriteria;
     const posts = await getPosts(req.session.sortCriteria);
     const user = getCurrentUser(req) || {};
-    res.render("home", { posts, user, accessToken, sortCriteria });
+    res.render("home", {posts, user, accessToken, sortCriteria});
 });
 
 app.get("/sort/:criteria", (req, res) => {
@@ -138,7 +138,7 @@ app.get("/sort/:criteria", (req, res) => {
 //
 app.get("/registerUsername", (req, res) => {
     if (req.query.error !== undefined) {
-        res.render("registerUsername", { regError: req.query.error });
+        res.render("registerUsername", {regError: req.query.error});
         return;
     }
     res.render("registerUsername");
@@ -174,6 +174,7 @@ app.post("/posts", isAuthenticated, (req, res) => {
     addPost(req.body.title, req.body.content, getCurrentUser(req));
     res.redirect("/");
 });
+
 app.post("/like/:id", isAuthenticated, async (req, res) => {
     // Update post likes
     const post = await findPostById(parseInt(req.params.id));
@@ -187,16 +188,26 @@ app.post("/like/:id", isAuthenticated, async (req, res) => {
         console.log("like blocked for own post by user: " + req.session.userId);
     }
 });
+
 app.get("/profile", isAuthenticated, async (req, res) => {
     // Render profile page
     const user = getCurrentUser(req) || {};
-    const posts = await getPosts();
-    res.render("profile", {user, posts});
+    const sortCriteria = req.session.sortCriteria;
+    const posts = await getPosts(sortCriteria);
+    res.render("profile", {user, posts, sortCriteria});
 });
+
+app.get("/profile/sort/:criteria", (req, res) => {
+    req.session.sortCriteria = req.params.criteria;
+    res.redirect("/profile");
+});
+
+
 app.get("/avatar/:username", (req, res) => {
     // Serve the avatar image for the user
     return handleAvatar(req, res);
 });
+
 app.post("/registerUsername", async (req, res) => {
     // Register a new user
 
@@ -420,7 +431,6 @@ function getCurrentDateTime() {
 
 // Middleware to check if user is authenticated
 function isAuthenticated(req, res, next) {
-    console.log("isAuthenticated id: ", req.session.userId);
     if (req.session.userId) {
         next();
     } else {
@@ -507,6 +517,9 @@ function getCurrentUser(req) {
 
 // Function to get all posts, sorted by latest first
 async function getPosts(sort) {
+    if (sort === undefined) {
+        sort = "id";
+    }
     return await db.all(`SELECT * FROM posts ORDER BY ${sort} DESC`);
 }
 

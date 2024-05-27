@@ -59,12 +59,6 @@ input[type="text"],textarea {
     background-color: var(--highlight-color);
 }
 
-.posts-ul {
-    display: flex;
-    flex-direction: column;
-    margin-top: 1rem;
-}
-
 .post-form {
     padding-left: 2em;
     padding-right: 2em;
@@ -97,6 +91,19 @@ input[type="text"],textarea {
     visibility: hidden;
 }
 
+.dropdown {
+    border: 0;
+    padding: .5em;
+    border-radius: .4em;
+}
+
+
+.posts-ul {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+    text-align: left;
+}
 
 
 /* mobile */

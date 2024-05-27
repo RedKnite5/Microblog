@@ -31,10 +31,19 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
+.user-posts {
+    text-align: center;
+}
+
+.post-list-header {
+    margin-bottom: .5em;
+}
+
 .user-posts ul {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    text-align: left;
 }
 
 .no-posts-alert {
