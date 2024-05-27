@@ -121,10 +121,10 @@ function changeUsername() {
     usernameSpan.style.display = "inline";
     usernameInput.style.display = "none";
 
-    fetch("/updateUsername/" + usernameInput.value, {
+    fetch("/updateUsername", {
         method: "POST",
-        headers: {"Content-Type": "text/plain"}, 
-        body: ""
+        headers: {"Content-Type": "application/json"}, 
+        body: JSON.stringify({"name": usernameInput.value})
     }).then(res => {
         window.location.href = "/profile";
     });

@@ -178,8 +178,12 @@ app.post("/posts", isAuthenticated, (req, res) => {
 app.post("/like/:id", isAuthenticated, async (req, res) => {
     // Update post likes
     const post = await findPostById(parseInt(req.params.id));
-    const postUser = await findUserByUsername(post.username);
-    if (parseInt(req.session.userId) !== postUser.id) {
+    let postUserId = -1;
+    if (post.username !== "deleted") {
+        postUserId = await findUserByUsername(post.username).id;
+    }
+    
+    if (parseInt(req.session.userId) !== postUserId) {
         db.run("UPDATE posts SET likes = $newLikes WHERE id = $postId", {
             $newLikes: post.likes + 1,
             $postId: post.id
@@ -221,8 +225,8 @@ app.post("/registerUsername", async (req, res) => {
     loginUser(req, res, username);
 });
 
-app.post("/updateUsername/:newUsername", isAuthenticated, async (req, res) => {
-    const newUsername = req.params.newUsername;
+app.post("/updateUsername", isAuthenticated, async (req, res) => {
+    const newUsername = req.body.name;
     const oldUsername = req.session.user.username;
     await db.run("UPDATE posts SET username = $newUsername WHERE username = $oldUsername", {
         $newUsername: newUsername,
@@ -393,20 +397,6 @@ async function findUserByGoogleId(googleId) {
     });
 }
 
-/*
-// Function to find a user by user ID
-function findUserById(userId) {
-    // Return user object if found, otherwise return undefined
-    // Jack Wrote This
-    for(let i = 0; i < posts.length; i++) {
-            if(posts[i].id == userId){
-                return i;
-            }
-        }
-    return undefined;
-}
-*/
-
 async function findPostById(postId) {
     // Return post object if found, otherwise return undefined
     return await db.get("SELECT * FROM posts WHERE id = $id", {
@@ -457,19 +447,6 @@ function isAuthenticated(req, res, next) {
     }
 }
 
-// Function to register a user
-/*
-async function registerUser(req, res) {
-    const username = req.body.username;
-    if (await findUserByUsername(username)) {
-        res.redirect("/register?error=Username+already+exists");
-    } else {
-        addUser(username);
-        res.redirect("/login");
-    }
-}
-*/
-
 // Function to login a user
 function loginUser(req, res, username) {
     // Login a user and redirect appropriately
@@ -498,23 +475,6 @@ function loginUser(req, res, username) {
         });
     });
 }
-
-/*
-// Function to logout a user
-function logoutUser(req, res) {
-    // TODO: Destroy session and redirect appropriately
-}
-
-// Function to render the profile page
-function renderProfile(req, res) {
-    // TODO: Fetch user posts and render the profile page
-}
-
-// Function to update post likes
-function updatePostLikes(req, res) {
-    // TODO: Increment post likes if conditions are met
-}
-*/
 
 // Function to handle avatar generation and serving
 function handleAvatar(req, res) {
@@ -623,17 +583,3 @@ function generateAvatar(letter, width = 200, height = 200) {
     const buf = can.toBuffer("image/png", { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE });
     return buf
 }
-
-/*
-function getNextPostId() {
-    //Jack Wrote This
-    let ret = 1;
-    for(let i = 0; i < posts.length; i++) {
-        if(posts[i].id !== ret) {
-            return ret;
-        }
-        ret++;
-    }
-    return ret;
-}
-*/
