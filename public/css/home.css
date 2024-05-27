@@ -82,6 +82,23 @@ input[type="text"],textarea {
     width: 100%;
 }
 
+.posts-list {
+    text-align: center;
+}
+
+.post-list-header {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 85%;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+
+
 /* mobile */
 @media (max-width: 800px) {
     .content-container {

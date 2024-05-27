@@ -50,7 +50,6 @@ let allEmojis = [];  // Global list to hold all emojis
 */
 
 // Set up Handlebars view engine with custom helpers
-//
 app.engine(
     "handlebars",
     expressHandlebars.engine({
@@ -101,6 +100,7 @@ app.use((req, res, next) => {
     res.locals.userId = req.session.userId || "";
     res.locals.user = {};
     res.locals.hashedGoogleId = null;
+    res.locals.sortCriteria = "id";
     next();
 });
 
@@ -119,9 +119,18 @@ app.use(favicon(__dirname + "/public/images/favicon.ico"));
 // template
 //
 app.get("/", async (req, res) => {
-    const posts = await getPosts();
+    if (req.session.sortCriteria === undefined) {
+        req.session.sortCriteria = "id";
+    }
+    const sortCriteria = req.session.sortCriteria;
+    const posts = await getPosts(req.session.sortCriteria);
     const user = getCurrentUser(req) || {};
-    res.render("home", { posts, user, accessToken });
+    res.render("home", { posts, user, accessToken, sortCriteria });
+});
+
+app.get("/sort/:criteria", (req, res) => {
+    req.session.sortCriteria = req.params.criteria;
+    res.redirect("/");
 });
 
 
@@ -497,8 +506,8 @@ function getCurrentUser(req) {
 }
 
 // Function to get all posts, sorted by latest first
-async function getPosts() {
-    return await db.all("SELECT * FROM posts ORDER BY id DESC");
+async function getPosts(sort) {
+    return await db.all(`SELECT * FROM posts ORDER BY ${sort} DESC`);
 }
 
 // Function to add a new post

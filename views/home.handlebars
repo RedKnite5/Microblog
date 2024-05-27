@@ -30,7 +30,26 @@
 
     <section class="posts-list">
         <!-- recent posts -->
-        <h2>Recent Posts</h2>
+        <nav class="post-list-header">
+            <span class="invisible">
+                <label for="dropdown-dummy" class="dropdown-label">Sort:</label>
+                <select id="sort-dropdown-dummy" name="dropdown-dummy">
+                    <option value="id">Recency</option>
+                    <option value="likes">Likes</option>
+                </select>
+            </span>
+
+
+            <h2>Recent Posts</h2>
+
+            <span>
+                <label for="dropdown" class="dropdown-label">Sort:</label>
+                <select id="sort-dropdown" name="dropdown" onchange="handleRedirect()">
+                    <option value="id">Recency</option>
+                    <option value="likes">Likes</option>
+                </select>
+            </span>
+        </nav>
 
         {{#if posts.length}}
         <ul class="posts-ul">
@@ -111,6 +130,18 @@ function insertEmoji(emoji) {
     //
     textarea.focus();  // Keep focus on the textarea
 }
+
+function handleRedirect() {
+    const dropdown = document.getElementById("sort-dropdown");
+    const selectedValue = dropdown.value;
+    if (selectedValue) {
+        window.location.href = "/sort/" + selectedValue;
+    }
+}
+
+const sortCriteria = "{{{sortCriteria}}}";
+console.log("sortCriteria: ", sortCriteria);
+document.getElementById('sort-dropdown').value = sortCriteria;
 
 </script>
 
