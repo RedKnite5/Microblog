@@ -47,6 +47,10 @@
     cursor: pointer;
 }
 
+.edit-username-button:hover {
+    color: var(--highlight-color);
+}
+
 #username-input {
     display: none;
     max-width: 10em;

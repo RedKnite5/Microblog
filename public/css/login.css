@@ -49,3 +49,7 @@
     padding: 1em;
     border-radius: 1em;
 }
+
+.login-register button:hover {
+    background-color: var(--highlight-color);
+}
