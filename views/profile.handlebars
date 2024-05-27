@@ -20,6 +20,8 @@
             <p><b>Username:</b> {{user.username}}</p>
             <p><b>Member since:</b> {{user.memberSince}}</p>
         </section>
+
+        <button class="delete-account-button" onclick="showDeleteModal()">Delete Account</button>
     </div>
 
     <section class="user-posts">
@@ -61,7 +63,41 @@
     </section>
 </section>
 
+<div class="modal" id="delete-modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Are you sure you want to delete your account?</h2>
+        <br><br>
+        <div class="modal-buttons">
+            <button onclick="deleteAccount()">Delete</button>
+            <button onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <script>
+
+function showDeleteModal() {
+    const deleteModal = document.getElementById("delete-modal");
+    deleteModal.style.display = "flex";
+}
+
+function closeModal() {
+    const deleteModal = document.getElementById("delete-modal");
+    deleteModal.style.display = "none";
+}
+
+function deleteAccount() {
+    const deleteModal = document.getElementById("delete-modal");
+    deleteModal.style.display = "none";
+    fetch("/deleteAccount", {
+        method: "POST",
+        headers: {"Content-Type": "text/plain"}, 
+        body: ""
+    }).then(res => {
+        window.location.href = "/logout";
+    });
+}
 
 function handleRedirect() {
     const dropdown = document.getElementById("sort-dropdown");
@@ -72,7 +108,6 @@ function handleRedirect() {
 }
 
 const sortCriteria = "{{{sortCriteria}}}";
-console.log("sortCriteria: ", sortCriteria);
-document.getElementById('sort-dropdown').value = sortCriteria;
+document.getElementById("sort-dropdown").value = sortCriteria;
 
 </script>

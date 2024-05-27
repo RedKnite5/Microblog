@@ -31,6 +31,15 @@ header {
     padding: 1em;
 }
 
+button {
+    cursor: pointer;
+    border: 0;
+}
+
+select {
+    cursor: pointer;
+}
+
 .logo {
     display: flex;
     align-items: center;

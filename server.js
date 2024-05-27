@@ -213,7 +213,7 @@ app.post("/registerUsername", async (req, res) => {
 
     const username = req.body.registerUsername;
 
-    if (await findUserByUsername(username) !== undefined) {
+    if (await findUserByUsername(username) !== undefined || username === "deleted") {
         res.redirect("/registerUsername?error=Username+already+exists");
         return;
     }
@@ -276,6 +276,20 @@ app.post("/delete/:id", isAuthenticated, async (req, res) => {
     res.redirect("/");
 });
 
+app.post("/deleteAccount", isAuthenticated, async (req, res) => {
+    const userId = req.session.userId;
+    const username = req.session.user.username;
+
+    db.run("DELETE FROM users WHERE id = $id", {
+        $id: userId
+    });
+
+    await db.run("UPDATE posts SET username = 'deleted' WHERE username = $username", {
+        $username: username
+    });
+
+    res.redirect("/");
+});
 
 app.get("/emojis", (req, res) => {
     // Serve the emojis
