@@ -81,7 +81,7 @@ app.set("views", "./views");
 // Middleware
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-//app.use(helmet());
+app.use(helmet());
 
 app.use(
     session({

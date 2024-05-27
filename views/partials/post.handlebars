@@ -22,7 +22,7 @@
 
             {{#if loggedIn}}
                 {{#ifEq this.username user.username}}
-                    <!-- font awesome  trashcan = <i class="fas fa-trash-alt"> </i>-->
+                    <!-- font awesome trashcan -->
                     <form action="/delete/{{this.id}}" method="POST">
                         <button type="submit" class="delete-button icon-button">
                             <i class="fas fa-trash-alt"></i>
@@ -31,7 +31,7 @@
                 {{else}}
                     <!-- Heart = ♥ -->
                         <button type="submit" class="like-button icon-button">
-                            <i class="fa-solid fa-heart" data-id="{{this.id}}" onclick="handleLikeClick(event)"></i>
+                            <i class="fa-solid fa-heart" id="like-icon-{{this.id}}", data-id="{{this.id}}"></i>
                         </button>
                 {{/ifEq}}
             {{/if}}
@@ -41,23 +41,4 @@
         </div>
     </div>
 </div>
-<script>
-
-function handleLikeClick(event) {
-    const postId = event.target.getAttribute("data-id");
-
-    const likeCount = document.getElementById("like-count-" + postId);
-    const updatedLikeCount = parseInt(likeCount.getAttribute("count")) + 1;
-
-    likeCount.textContent = updatedLikeCount.toString() + " Likes";
-    likeCount.setAttribute("count", updatedLikeCount.toString());
-
-    fetch("/like/" + postId, {method: "POST"});
-}
-
-function handleDeleteClick(event) {
-    const buttonElement = event.target.closest(".delete-button");
-    const postId = buttonElement.getAttribute("data-id");
-}
-
-</script>
+<script src="/post.js" post="{{this.id}}"></script>

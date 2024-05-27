@@ -105,6 +105,10 @@ input[type="text"],textarea {
     text-align: left;
 }
 
+#sort-criteria {
+    display: none;
+}
+
 
 /* mobile */
 @media (max-width: 800px) {
