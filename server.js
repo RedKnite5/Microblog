@@ -197,11 +197,10 @@ app.get("/profile", isAuthenticated, async (req, res) => {
     res.render("profile", {user, posts, sortCriteria});
 });
 
-app.get("/profile/sort/:criteria", (req, res) => {
+app.get("/profile/sort/:criteria", isAuthenticated, (req, res) => {
     req.session.sortCriteria = req.params.criteria;
     res.redirect("/profile");
 });
-
 
 app.get("/avatar/:username", (req, res) => {
     // Serve the avatar image for the user
@@ -221,20 +220,26 @@ app.post("/registerUsername", async (req, res) => {
     await addUser(username, req.session.hashedGoogleId);
     loginUser(req, res, username);
 });
-/*
-app.post("/login", async (req, res) => {
-    // Login a user
 
-    const username = req.body.loginUsername;
+app.post("/updateUsername/:newUsername", isAuthenticated, async (req, res) => {
+    const newUsername = req.params.newUsername;
+    const oldUsername = req.session.user.username;
+    await db.run("UPDATE posts SET username = $newUsername WHERE username = $oldUsername", {
+        $newUsername: newUsername,
+        $oldUsername: oldUsername
+    });
 
-    if (await findUserByUsername(username) === undefined) {
-        res.redirect("/login?error=Username+does+not+exist");
-        return;
-    }
+    await db.run("UPDATE users SET username = $newUsername, avatar_url = $newUrl WHERE username = $oldUsername", {
+        $newUsername: newUsername,
+        $newUrl: "/avatar/" + newUsername,
+        $oldUsername: oldUsername
+    });
 
-    loginUser(req, res, username);
+    req.session.user.username = newUsername;
+    req.session.user.avatar_url = "/avatar/" + newUsername;
+
+    res.redirect("/profile");
 });
-*/
 
 app.get("/logout", isAuthenticated, (req, res) => {
     // Logout the user

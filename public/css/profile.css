@@ -31,6 +31,27 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
+.username-box {
+    display: flex;
+    justify-content: space-between;
+}
+
+.input-container {
+    height: 1.6em;
+    margin-top: .5em;
+}
+
+.edit-username-button {
+    margin-top: .5em;
+    margin-left: .1em;
+    cursor: pointer;
+}
+
+#username-input {
+    display: none;
+    max-width: 10em;
+}
+
 .user-posts {
     text-align: center;
 }

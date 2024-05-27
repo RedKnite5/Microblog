@@ -17,7 +17,14 @@
         <section class="profile-info">
             <!-- user profile info -->
             <h1>User Profile</h1>
-            <p><b>Username:</b> {{user.username}}</p>
+            <p class="username-box">
+                <span class="input-container">
+                    <b>Username:</b>
+                    <span id="current-username">{{user.username}}</span>
+                    <input type="text" id="username-input" value="{{user.username}}" onfocusout="changeUsername()">
+                </span>
+                <i class="fa-solid fa-pencil edit-username-button" onclick="editingUsername()"></i>
+            </p>
             <p><b>Member since:</b> {{user.memberSince}}</p>
         </section>
 
@@ -96,6 +103,30 @@ function deleteAccount() {
         body: ""
     }).then(res => {
         window.location.href = "/logout";
+    });
+}
+
+function editingUsername() {
+    const usernameSpan = document.getElementById("current-username");
+    const usernameInput = document.getElementById("username-input");
+
+    usernameSpan.style.display = "none";
+    usernameInput.style.display = "inline";
+}
+
+function changeUsername() {
+    const usernameSpan = document.getElementById("current-username");
+    const usernameInput = document.getElementById("username-input");
+
+    usernameSpan.style.display = "inline";
+    usernameInput.style.display = "none";
+
+    fetch("/updateUsername/" + usernameInput.value, {
+        method: "POST",
+        headers: {"Content-Type": "text/plain"}, 
+        body: ""
+    }).then(res => {
+        window.location.href = "/profile";
     });
 }
 
