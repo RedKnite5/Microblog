@@ -4,6 +4,17 @@
 <section class="login-register">
     <section class = "login-area signin-area">
         <h2>Login With Google</h2>
-        <button type="button" id="Login" onclick="window.location.href='/auth/google'">Login With Google</button>
+        <button type="button" id="Login">Login With Google</button>
     </section>
 </section>
+
+<script>
+
+const button = document.getElementById("Login")
+button.addEventListener("click", goToGoogle);
+
+function goToGoogle() {
+    window.location.replace('/auth/google')
+}
+
+</script>

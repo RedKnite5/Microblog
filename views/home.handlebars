@@ -123,11 +123,8 @@ function searchEmojis() {
 
 function insertEmoji(emoji) {
     const textarea = document.getElementById("post-content-input");
-    // put an emoji on a form somehow. 
     textarea.value += emoji;
-    // do this when you're doing getting the emoji on the form
-    //
-    textarea.focus();  // Keep focus on the textarea
+    textarea.focus();
 }
 
 function handleRedirect() {
@@ -139,7 +136,6 @@ function handleRedirect() {
 }
 
 const sortCriteria = "{{{sortCriteria}}}";
-console.log("sortCriteria: ", sortCriteria);
 document.getElementById('sort-dropdown').value = sortCriteria;
 
 </script>

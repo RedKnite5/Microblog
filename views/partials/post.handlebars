@@ -43,23 +43,21 @@
 </div>
 <script>
 
-    function handleLikeClick(event) {
-        const postId = event.target.getAttribute("data-id");
+function handleLikeClick(event) {
+    const postId = event.target.getAttribute("data-id");
 
-        const likeCount = document.getElementById("like-count-" + postId);
-        const updatedLikeCount = parseInt(likeCount.getAttribute("count")) + 1;
+    const likeCount = document.getElementById("like-count-" + postId);
+    const updatedLikeCount = parseInt(likeCount.getAttribute("count")) + 1;
 
-        likeCount.textContent = updatedLikeCount.toString() + " Likes";
-        likeCount.setAttribute("count", updatedLikeCount.toString());
+    likeCount.textContent = updatedLikeCount.toString() + " Likes";
+    likeCount.setAttribute("count", updatedLikeCount.toString());
 
-        fetch("/like/" + postId, {method: "POST"});
-    }
+    fetch("/like/" + postId, {method: "POST"});
+}
 
-    function handleDeleteClick(event) {
-        const buttonElement = event.target.closest(".delete-button");
-        const postId = buttonElement.getAttribute("data-id");
+function handleDeleteClick(event) {
+    const buttonElement = event.target.closest(".delete-button");
+    const postId = buttonElement.getAttribute("data-id");
+}
 
-        // you might want to "fetch" something...
-
-    }
 </script>

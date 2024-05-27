@@ -9,6 +9,7 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const crypto = require("crypto");
 const sqlite = require("sqlite");
 const sqlite3 = require("sqlite3");
+const helmet = require("helmet")
 require("dotenv").config();
 const accessToken = process.env.EMOJI_API_KEY;
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -79,6 +80,8 @@ app.set("views", "./views");
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Middleware
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+//app.use(helmet());
 
 app.use(
     session({
@@ -202,6 +205,7 @@ app.get("/profile", isAuthenticated, async (req, res) => {
 });
 
 app.get("/profile/sort/:criteria", isAuthenticated, (req, res) => {
+    // Sort posts by criteria
     req.session.sortCriteria = req.params.criteria;
     res.redirect("/profile");
 });
