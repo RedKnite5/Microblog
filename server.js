@@ -133,7 +133,7 @@ app.get("/sort/:criteria", (req, res) => {
         req.session.sortCriteria = req.params.criteria;
         res.redirect("/");
     }
-    console.log("ERROR");
+    console.log("ERROR invalid sorting criteria");
 });
 
 
@@ -271,9 +271,13 @@ app.get("/logout", isAuthenticated, (req, res) => {
             if (err) {
                 next(err);
             }
-            res.redirect("/");
+            res.redirect("/googleLogout");
         });
     });
+});
+
+app.get("/googleLogout", async (req, res) => {
+    res.render("googleLogout");
 });
 
 app.post("/delete/:id", isAuthenticated, async (req, res) => {
@@ -427,8 +431,6 @@ async function addUser(username, hashedGoogleId) {
     const columns = "(username, avatar_url, hashedGoogleId, memberSince)";
     const values = "($username, $avatar_url, $hashedGoogleId, $memberSince)";
     const sanitizedUsername = encodeURIComponent(username);
-    console.log("username: ", username);
-    console.log("sanitizedUsername: ", sanitizedUsername);
 
     await db.run(`INSERT INTO users ${columns} VALUES ${values}`, {
         $username: username,
