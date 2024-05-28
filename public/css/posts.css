@@ -19,6 +19,10 @@
     flex-grow: 1;
 }
 
+.post-main-content {
+    overflow-wrap: break-word;
+}
+
 .post-status-bar {
     display: flex;
     justify-content: space-between;
@@ -48,4 +52,7 @@ hr {
     margin-top: 1em;
     margin-bottom: .5em;
 }
+
+
+
 

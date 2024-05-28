@@ -5,7 +5,7 @@
         <img src="{{#if this.avatar_url}}
                     {{this.avatar_url}}
                 {{else}}
-                    /avatar/{{this.username}}
+                    /avatar/{{sanitizeURL this.username}}
                 {{/if}}"
                 alt="Poster's Avatar"
                 class="post-avatar-img">
@@ -15,7 +15,7 @@
         <h3>
             <a href="/post/{{this.id}}">{{this.title}}</a>
         </h3>
-        <p>{{this.content}}</p>
+        <p class="post-main-constent">{{this.content}}</p>
         <hr>
         <div class="post-status-bar">
             <!-- everything that is shown in the status bar -->

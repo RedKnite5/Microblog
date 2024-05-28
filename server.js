@@ -64,11 +64,8 @@ app.engine(
                 }
                 return options.inverse(this);
             },
-            getUsersPosts: function (username) {
-                return findPostsByUser(username);
-            },
-            getUsersPostsLength: function (username) {
-                return findPostsByUser(username).length;
+            sanitizeURL: function (str) {
+                return encodeURIComponent(str);
             }
         },
     })
@@ -242,14 +239,17 @@ app.post("/updateUsername", isAuthenticated, async (req, res) => {
         $oldUsername: oldUsername
     });
 
+    const sanitizedUsername = encodeURIComponent(newUsername);
+    const avatar_url = `/avatar/${sanitizedUsername}`;
+
     await db.run("UPDATE users SET username = $newUsername, avatar_url = $newUrl WHERE username = $oldUsername", {
         $newUsername: newUsername,
-        $newUrl: "/avatar/" + newUsername,
+        $newUrl: avatar_url,
         $oldUsername: oldUsername
     });
 
     req.session.user.username = newUsername;
-    req.session.user.avatar_url = "/avatar/" + newUsername;
+    req.session.user.avatar_url = avatar_url;
 
     res.redirect("/profile");
 });
@@ -426,10 +426,13 @@ async function addUser(username, hashedGoogleId) {
 
     const columns = "(username, avatar_url, hashedGoogleId, memberSince)";
     const values = "($username, $avatar_url, $hashedGoogleId, $memberSince)";
+    const sanitizedUsername = encodeURIComponent(username);
+    console.log("username: ", username);
+    console.log("sanitizedUsername: ", sanitizedUsername);
 
     await db.run(`INSERT INTO users ${columns} VALUES ${values}`, {
         $username: username,
-        $avatar_url: `/avatar/${username}`,
+        $avatar_url: `/avatar/${sanitizedUsername}`,
         $hashedGoogleId: hashedGoogleId,
         $memberSince: getCurrentDateTime()
     });

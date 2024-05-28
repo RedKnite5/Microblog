@@ -37,7 +37,7 @@
 }
 
 .input-container {
-    height: 1.6em;
+    min-height: 1.6em;
     margin-top: .5em;
 }
 
