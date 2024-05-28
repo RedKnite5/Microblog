@@ -55,17 +55,15 @@
 
         <!-- you'll need to make this conditaionl and #each expression work -->
         <!-- Need a way to check how many posts the user has made -->
-        {{#if 0}}
-            <!-- fix this up with some helper functions and other handlebars expressions, or add you own character -->
-            <p class="no-posts-alert">You have not posted yet, poster.</p>
-        {{else}}
+        {{#if posts.length}}
             <ul>
                 {{#each posts}}
-                    {{#ifEq this.username ../user.username}}
-                        {{> post this user=../user loggedIn=true}}
-                    {{/ifEq}}
+                    {{> post this user=../user loggedIn=true}}
                 {{/each}}
             </ul>
+        {{else}}
+            <!-- fix this up with some helper functions and other handlebars expressions, or add you own character -->
+            <p class="no-posts-alert">There is a {{postNeoType}} famine. Help!</p>
         {{/if}}
     </section>
 </section>
@@ -84,4 +82,4 @@
 
 <div id="sort-criteria">{{sortCriteria}}</div>
 
-<script src="/profile.js"></script>
+<script src="javascript/profile.js"></script>

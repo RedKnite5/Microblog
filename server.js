@@ -132,8 +132,11 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/sort/:criteria", (req, res) => {
-    req.session.sortCriteria = req.params.criteria;
-    res.redirect("/");
+    if (["id", "likes"].includes(req.params.criteria)) {
+        req.session.sortCriteria = req.params.criteria;
+        res.redirect("/");
+    }
+    console.log("ERROR");
 });
 
 
@@ -199,8 +202,10 @@ app.post("/like/:id", isAuthenticated, async (req, res) => {
 app.get("/profile", isAuthenticated, async (req, res) => {
     // Render profile page
     const user = getCurrentUser(req) || {};
+    const username = user.username;
     const sortCriteria = req.session.sortCriteria;
-    const posts = await getPosts(sortCriteria);
+    const allPosts = await getPosts(sortCriteria);
+    const posts = allPosts.filter(post => post.username === username);
     res.render("profile", {user, posts, sortCriteria});
 });
 
