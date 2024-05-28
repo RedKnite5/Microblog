@@ -15,9 +15,9 @@ const accessToken = process.env.EMOJI_API_KEY;
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 const app = express();
 const PORT = 3000;
@@ -25,7 +25,7 @@ const PORT = 3000;
 let allEmojis = [];  // Global list to hold all emojis
 
 /*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Handlebars Helpers
 
     Handlebars helpers are custom functions that can be used within the templates
@@ -47,7 +47,7 @@ let allEmojis = [];  // Global list to hold all emojis
             {{else}}
                 <!-- Content if value1 does not equal value2 -->
             {{/ifEq}}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
 // Set up Handlebars view engine with custom helpers
@@ -74,9 +74,9 @@ app.engine(
 app.set("view engine", "handlebars");
 app.set("views", "./views");
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Middleware
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app.use(helmet());
 
@@ -110,9 +110,9 @@ app.use(express.json());                            // Parse JSON bodies (as sen
 
 app.use(favicon(__dirname + "/public/images/favicon.ico"));
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Routes
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Home route: render home view with posts and user
 // We pass the posts and user variables into the home
@@ -132,8 +132,9 @@ app.get("/sort/:criteria", (req, res) => {
     if (["id", "likes"].includes(req.params.criteria)) {
         req.session.sortCriteria = req.params.criteria;
         res.redirect("/");
+        return;
     }
-    console.log("ERROR invalid sorting criteria");
+    console.log(`ERROR invalid sorting criteria: '${req.params.criteria}'`);
 });
 
 
@@ -150,7 +151,7 @@ app.get("/registerUsername", (req, res) => {
 // Login route GET route is used for error response from login
 //
 app.get("/login", (req, res) => {
-    res.render("login", { loginError: req.query.error });
+    res.render("login", {loginError: req.query.error});
 });
 
 // Error route: render error page
@@ -164,11 +165,11 @@ app.get("/error", (req, res) => {
 
 app.get("/post/:id", async (req, res) => {
     // Render post detail page
-    const post = await findPostById(parseInt(req.params.id));
+    const current = await findPostById(parseInt(req.params.id));
     const user = req.session.user;
     const loggedIn = req.session.loggedIn;
     
-    res.render("post_page", {current: post, user: user, loggedIn: loggedIn});
+    res.render("post_page", {current, user, loggedIn});
 });
 
 app.post("/posts", isAuthenticated, (req, res) => {
@@ -222,7 +223,12 @@ app.post("/registerUsername", async (req, res) => {
 
     const username = req.body.registerUsername;
 
-    if (await findUserByUsername(username) !== undefined || username === "deleted") {
+    const reservedUsernames = ["deleted"];
+
+    const usernameReserved = reservedUsernames.includes(username);
+    const usernameTaken = await findUserByUsername(username) !== undefined;
+
+    if (usernameTaken || usernameReserved) {
         res.redirect("/registerUsername?error=Username+already+exists");
         return;
     }
@@ -234,7 +240,11 @@ app.post("/registerUsername", async (req, res) => {
 app.post("/updateUsername", isAuthenticated, async (req, res) => {
     const newUsername = req.body.name;
     const oldUsername = req.session.user.username;
-    await db.run("UPDATE posts SET username = $newUsername WHERE username = $oldUsername", {
+
+    const updatePosts = "UPDATE posts "
+        + "SET username = $newUsername "
+        + "WHERE username = $oldUsername";
+    await db.run(updatePosts, {
         $newUsername: newUsername,
         $oldUsername: oldUsername
     });
@@ -242,7 +252,11 @@ app.post("/updateUsername", isAuthenticated, async (req, res) => {
     const sanitizedUsername = encodeURIComponent(newUsername);
     const avatar_url = `/avatar/${sanitizedUsername}`;
 
-    await db.run("UPDATE users SET username = $newUsername, avatar_url = $newUrl WHERE username = $oldUsername", {
+
+    const updateUsers = "UPDATE users "
+        + "SET username = $newUsername, avatar_url = $newUrl "
+        + "WHERE username = $oldUsername";
+    await db.run(updateUsers, {
         $newUsername: newUsername,
         $newUrl: avatar_url,
         $oldUsername: oldUsername
@@ -306,7 +320,10 @@ app.post("/deleteAccount", isAuthenticated, async (req, res) => {
         $id: userId
     });
 
-    await db.run("UPDATE posts SET username = 'deleted' WHERE username = $username", {
+    const query = "UPDATE posts "
+        + "SET username = 'deleted' "
+        + "WHERE username = $username";
+    await db.run(query, {
         $username: username
     });
 
@@ -367,14 +384,15 @@ passport.deserializeUser((obj, done) => {
 });
 
 async function getEmojis() {
-    const emoji_data = await fetch("https://emoji-api.com/emojis?access_key=" + accessToken);
+    const url = "https://emoji-api.com/emojis?access_key=" + accessToken;
+    const emoji_data = await fetch(url);
     allEmojis = await emoji_data.json();
 }
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Server Activation
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 let db = null
 async function activate() {
@@ -391,9 +409,9 @@ async function activate() {
 activate();
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Support Functions and Variables
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Function to find a user by username
 async function findUserByUsername(username) {
@@ -405,7 +423,8 @@ async function findUserByUsername(username) {
 
 async function findUserByGoogleId(googleId) {
     // Return user object if found, otherwise return undefined
-    return await db.get("SELECT * FROM users WHERE hashedGoogleId = $googleId", {
+    const query = "SELECT * FROM users WHERE hashedGoogleId = $googleId";
+    return await db.get(query, {
         $googleId: googleId,
     });
 }
@@ -523,7 +542,6 @@ async function addPost(title, content, user) {
     const columns = "(title, content, username, timestamp, likes)";
     const values = "($title, $content, $username, $timestamp, $likes)";
     const query = `INSERT INTO posts ${columns} VALUES ${values}`;
-
     await db.run(query, {
         $title: title,
         $content: content,
@@ -578,7 +596,10 @@ function generateAvatar(letter, width = 200, height = 200) {
         z: "Crimson"
     };
 
-    const color = colors[letter.toLowerCase()];
+    let color = colors[letter.toLowerCase()];
+    if (color === undefined) {
+        color = "black";
+    }
 
     const can = canvas.createCanvas(width, height)
     const ctx = can.getContext("2d")
@@ -594,6 +615,9 @@ function generateAvatar(letter, width = 200, height = 200) {
     const y = height / 2;
     ctx.fillText(letter, x, y);
 
-    const buf = can.toBuffer("image/png", { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE });
+    const buf = can.toBuffer(
+        "image/png",
+        {compressionLevel: 3, filters: canvas.PNG_FILTER_NONE});
+
     return buf
 }

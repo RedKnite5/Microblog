@@ -45,11 +45,5 @@
 .login-register button {
     width: 100%;
     margin-top: 2em;
-    background-color: var(--accent-color);
     padding: 1em;
-    border-radius: 1em;
-}
-
-.login-register button:hover {
-    background-color: var(--highlight-color);
 }

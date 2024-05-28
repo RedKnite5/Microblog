@@ -15,6 +15,7 @@
 
 .profile-avatar {
     display: inline;
+    margin-right: 1em;
 }
 
 .profile-avatar-img {
@@ -25,10 +26,6 @@
 
 .profile-info {
     display: inline-block;
-    padding: 1em;
-    margin-bottom: 1em;
-    border-radius: 1em;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
 .username-box {
@@ -81,13 +78,9 @@
 
 .delete-account-button {
     padding: 1.5em;
-    border-radius: .5em;
-    background-color: #e5e5e5;
+    margin-left: .7em;
 }
 
-.delete-account-button:hover {
-    background-color: #ccccd0;
-}
 
 .modal {
     display: none;
@@ -101,7 +94,7 @@
     overflow: auto;
     background-color: rgb(0,0,0);
     background-color: rgba(0,0,0,0.4);
-  }
+}
 
 .modal-content {
     background-color: #fefefe;
@@ -135,12 +128,6 @@
 
 .modal-buttons button {
     padding: 1em;
-    border-radius: .4em;
-    background-color: #e5e5e5;
-}
-
-.modal-buttons button:hover {
-    background-color: #ccccd0;
 }
 
 

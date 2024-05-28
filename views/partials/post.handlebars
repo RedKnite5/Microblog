@@ -1,5 +1,5 @@
 {{! Partial for a single post }}
-<div class="post">
+<div class="post panel">
     <div class="post-avatar">
         <!-- the user's avatar -->
         <img src="{{#if this.avatar_url}}
@@ -13,9 +13,9 @@
     <div class="post-content preserve-newlines">
         <!-- the post -->
         <h3>
-            <a href="/post/{{this.id}}">{{this.title}}</a>
+            <a href="/post/{{this.id}}" class="no-overflow">{{this.title}}</a>
         </h3>
-        <p class="post-main-constent">{{this.content}}</p>
+        <p class="no-overflow">{{this.content}}</p>
         <hr>
         <div class="post-status-bar">
             <!-- everything that is shown in the status bar -->
@@ -30,15 +30,17 @@
                     </form>
                 {{else}}
                     <!-- Heart = ♥ -->
+                    <div>
                         <button type="submit" class="like-button icon-button">
                             <i class="fa-solid fa-heart" id="like-icon-{{this.id}}", data-id="{{this.id}}"></i>
                         </button>
+                    </div>
                 {{/ifEq}}
             {{/if}}
 
-            <span id="like-count-{{this.id}}" count="{{this.likes}}">{{this.likes}} Likes</span>
-            <span>Posted by {{this.username}} on {{this.timestamp}}</span>
+            <span class="count-likes" id="like-count-{{this.id}}" count="{{this.likes}}">{{this.likes}} Likes</span>
+            <span class="no-overflow">Posted by {{this.username}} on {{this.timestamp}}</span>
         </div>
     </div>
 </div>
-<script src="javascript/post.js" post="{{this.id}}"></script>
+<script src="/javascript/post.js" post="{{this.id}}"></script>

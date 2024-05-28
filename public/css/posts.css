@@ -1,11 +1,14 @@
 
-.post {
-    width: 80%;
+.panel {
     padding: 1em;
     margin-bottom: 1em;
     border-radius: 1em;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.post {
     display: flex;
+    width: 80%;
 }
 
 .post-avatar-img {
@@ -19,8 +22,10 @@
     flex-grow: 1;
 }
 
-.post-main-content {
-    overflow-wrap: break-word;
+.no-overflow {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .post-status-bar {
@@ -44,6 +49,10 @@
 
 .icon-button:hover {
     color: red;
+}
+
+.count-likes {
+    min-width: 3.5em;
 }
 
 hr {

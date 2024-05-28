@@ -14,7 +14,7 @@
                     class="profile-avatar-img">
         </div>
 
-        <section class="profile-info">
+        <section class="profile-info panel">
             <!-- user profile info -->
             <h1>User Profile</h1>
             <p class="username-box">
@@ -28,14 +28,14 @@
             <p><b>Member since:</b> {{user.memberSince}}</p>
         </section>
 
-        <button class="delete-account-button" id="delete-account-button">Delete Account</button>
+        <button class="delete-account-button basic-button" id="delete-account-button">Delete Account</button>
     </div>
 
     <section class="user-posts">
         <!-- you can call posts tweets, or truths, or whatever, these are neologisms. Choose your own new in server.js -->
         <nav class="post-list-header">
             <span class="invisible">
-                <label for="dropdown-dummy" class="dropdown-label">Sort:</label>
+                <label for="sort-dropdown-dummy" class="dropdown-label">Sort:</label>
                 <select id="sort-dropdown-dummy" name="dropdown-dummy" class="dropdown">
                     <option value="id">Recency</option>
                     <option value="likes">Likes</option>
@@ -45,7 +45,7 @@
             <h2>Your {{{postNeoType}}}s</h2>
 
             <span>
-                <label for="dropdown" class="dropdown-label">Sort:</label>
+                <label for="sort-dropdown" class="dropdown-label">Sort:</label>
                 <select id="sort-dropdown" name="dropdown" class="dropdown">
                     <option value="id">Recency</option>
                     <option value="likes">Likes</option>
@@ -74,12 +74,12 @@
         <h2>Are you sure you want to delete your account?</h2>
         <br><br>
         <div class="modal-buttons">
-            <button id="DELETE-account">Delete</button>
-            <button class="close-modal">Cancel</button>
+            <button id="DELETE-account" class="basic-button">Delete</button>
+            <button class="close-modal basic-button">Cancel</button>
         </div>
     </div>
 </div>
 
 <div id="sort-criteria">{{sortCriteria}}</div>
 
-<script src="javascript/profile.js"></script>
+<script src="/javascript/profile.js"></script>

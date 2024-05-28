@@ -16,8 +16,8 @@
 
 
                 <div class="form-actions">
-                    <button type="button" class="emoji-button" id="emoji-button">😀</button>
-                    <button type="submit" class="post-button">Post</button>
+                    <button type="button" class="emoji-button basic-button" id="emoji-button">😀</button>
+                    <button type="submit" class="post-button basic-button">Post</button>
                 </div>
             </form>
 
@@ -32,7 +32,7 @@
         <!-- recent posts -->
         <nav class="post-list-header">
             <span class="invisible">
-                <label for="dropdown-dummy" class="dropdown-label">Sort:</label>
+                <label for="sort-dropdown-dummy" class="dropdown-label">Sort:</label>
                 <select id="sort-dropdown-dummy" name="dropdown-dummy" class="dropdown">
                     <option value="id">Recency</option>
                     <option value="likes">Likes</option>
@@ -42,7 +42,7 @@
             <h2>Recent {{{postNeoType}}}s</h2>
 
             <span>
-                <label for="dropdown" class="dropdown-label">Sort:</label>
+                <label for="sort-dropdown" class="dropdown-label">Sort:</label>
                 <select id="sort-dropdown" name="dropdown" class="dropdown">
                     <option value="id">Recency</option>
                     <option value="likes">Likes</option>
@@ -65,4 +65,4 @@
 
 <div id="sort-criteria">{{sortCriteria}}</div>
 
-<script src="javascript/home.js"></script>
+<script src="/javascript/home.js"></script>
