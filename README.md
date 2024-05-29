@@ -10,6 +10,8 @@ This project is a simplified clone of Twitter, created as part of a web programm
 - **Responsive Design:** Works well on both desktop and mobile devices.
 - **Sessions** Uses Express-Sessions to manage user sessions.
 - **Change Username** Allows users to change their username.
+- **Account Deletion** Users can delete their account, which will remove their name from all posts they have created.
+- **Sorting Posts** Posts can be sorted by how new they are or by how many likes they have.
 
 ## Technologies Used
 - **Frontend:** HTML, CSS, JavaScript, Handlebars
