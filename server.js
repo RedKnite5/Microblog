@@ -10,7 +10,7 @@ const crypto = require("crypto");
 const sqlite = require("sqlite");
 const sqlite3 = require("sqlite3");
 const helmet = require("helmet")
-const rateLimit = require('express-rate-limit');
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 const accessToken = process.env.EMOJI_API_KEY;
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -87,7 +87,6 @@ const myRateLimit = rateLimit({
     message: "You have exceeded your 250 requests per minute limit.",
     headers: true,
 });
-
 app.use(myRateLimit);
 
 app.use(
@@ -115,7 +114,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static("public"));                  // Serve static files
-app.use(express.urlencoded({ extended: true }));    // Parse URL-encoded bodies (as sent by HTML forms)
+app.use(express.urlencoded({extended: true}));      // Parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.json());                            // Parse JSON bodies (as sent by API clients)
 
 app.use(favicon(__dirname + "/public/images/favicon.ico"));
@@ -171,7 +170,6 @@ app.get("/error", (req, res) => {
 });
 
 // Additional routes that you must implement
-
 
 app.get("/post/:id", async (req, res) => {
     // Render post detail page
@@ -443,13 +441,6 @@ async function findPostById(postId) {
     // Return post object if found, otherwise return undefined
     return await db.get("SELECT * FROM posts WHERE id = $id", {
         $id: postId,
-    });
-}
-
-async function findPostsByUser(username) {
-    // Return array of posts by username
-    return await db.all("SELECT * FROM posts WHERE username = $username", {
-        $username: username,
     });
 }
 
