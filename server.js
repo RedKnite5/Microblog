@@ -376,6 +376,9 @@ app.get("/auth/google/callback",
 );
 
 
+
+passport.authenticate("google", {scope: ["profile"]});
+
 // Configure passport
 passport.use(new GoogleStrategy({
     clientID: CLIENT_ID,

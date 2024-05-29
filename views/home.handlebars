@@ -39,7 +39,14 @@
                 </select>
             </span>
 
-            <h2>Recent {{{postNeoType}}}s</h2>
+            <h2>
+                {{#ifEq sortCriteria "id"}}
+                    Recent
+                {{else}}
+                    Liked
+                {{/ifEq}}
+                {{{postNeoType}}}s
+            </h2>
 
             <span>
                 <label for="sort-dropdown" class="dropdown-label">Sort:</label>
