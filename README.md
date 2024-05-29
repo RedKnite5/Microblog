@@ -9,6 +9,7 @@ This project is a simplified clone of Twitter, created as part of a web programm
 - **User Profiles:** View your profile.
 - **Responsive Design:** Works well on both desktop and mobile devices.
 - **Sessions** Uses Express-Sessions to manage user sessions.
+- **Change Username** Allows users to change their username.
 
 ## Technologies Used
 - **Frontend:** HTML, CSS, JavaScript, Handlebars
@@ -35,6 +36,8 @@ This project is a simplified clone of Twitter, created as part of a web programm
    Create a `.env` file in the root directory and add the following:
    ```plaintext
    EMOJI_API_KEY=your_emoji_api_access_key
+   CLIENT_ID=your_client_id_here
+   CLIENT_SECRET=your_client_secret_here
    ```
 
 4. **Start the development server:**
