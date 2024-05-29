@@ -1,16 +1,16 @@
-const canvas = require("canvas");
+const crypto = require("node:crypto");
+const process = require("node:process");
 const express = require("express");
 const expressHandlebars = require("express-handlebars");
 const session = require("express-session");
 const favicon = require("serve-favicon");
-const process = require("node:process");
-const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const crypto = require("crypto");
+const canvas = require("canvas");
 const sqlite = require("sqlite");
 const sqlite3 = require("sqlite3");
 const helmet = require("helmet")
 const rateLimit = require("express-rate-limit");
+const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 require("dotenv").config();
 const accessToken = process.env.EMOJI_API_KEY;
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -324,16 +324,18 @@ app.post("/deleteAccount", isAuthenticated, async (req, res) => {
     const userId = req.session.userId;
     const username = req.session.user.username;
 
-    db.run("DELETE FROM users WHERE id = $id", {
+    const deletePromise = db.run("DELETE FROM users WHERE id = $id", {
         $id: userId
     });
 
     const query = "UPDATE posts "
         + "SET username = 'deleted' "
         + "WHERE username = $username";
-    await db.run(query, {
+    const updatePromise = db.run(query, {
         $username: username
     });
+
+    await Promise.all([deletePromise, updatePromise]);
 
     res.redirect("/");
 });
