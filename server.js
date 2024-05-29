@@ -10,6 +10,7 @@ const crypto = require("crypto");
 const sqlite = require("sqlite");
 const sqlite3 = require("sqlite3");
 const helmet = require("helmet")
+const rateLimit = require('express-rate-limit');
 require("dotenv").config();
 const accessToken = process.env.EMOJI_API_KEY;
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -79,6 +80,15 @@ app.set("views", "./views");
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app.use(helmet());
+
+const myRateLimit = rateLimit({
+    windowMs: 1000,  // 1 second
+    max: 25,
+    message: "You have exceeded your 25 requests per second limit.",
+    headers: true,
+});
+
+app.use(myRateLimit);
 
 app.use(
     session({
