@@ -82,9 +82,9 @@ app.set("views", "./views");
 app.use(helmet());
 
 const myRateLimit = rateLimit({
-    windowMs: 1000,  // 1 second
-    max: 25,
-    message: "You have exceeded your 25 requests per second limit.",
+    windowMs: 60*1000,  // 1 minute
+    max: 250,
+    message: "You have exceeded your 250 requests per minute limit.",
     headers: true,
 });
 
