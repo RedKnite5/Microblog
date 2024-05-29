@@ -240,23 +240,21 @@ app.post("/registerUsername", async (req, res) => {
 app.post("/updateUsername", isAuthenticated, async (req, res) => {
     const newUsername = req.body.name;
     const oldUsername = req.session.user.username;
+    const sanitizedUsername = encodeURIComponent(newUsername);
+    const avatar_url = `/avatar/${sanitizedUsername}`;
 
     const updatePosts = "UPDATE posts "
         + "SET username = $newUsername "
         + "WHERE username = $oldUsername";
-    await db.run(updatePosts, {
+    const postPromise = db.run(updatePosts, {
         $newUsername: newUsername,
         $oldUsername: oldUsername
     });
 
-    const sanitizedUsername = encodeURIComponent(newUsername);
-    const avatar_url = `/avatar/${sanitizedUsername}`;
-
-
     const updateUsers = "UPDATE users "
-        + "SET username = $newUsername, avatar_url = $newUrl "
-        + "WHERE username = $oldUsername";
-    await db.run(updateUsers, {
+    + "SET username = $newUsername, avatar_url = $newUrl "
+    + "WHERE username = $oldUsername";
+    const userPromise = db.run(updateUsers, {
         $newUsername: newUsername,
         $newUrl: avatar_url,
         $oldUsername: oldUsername
@@ -264,6 +262,8 @@ app.post("/updateUsername", isAuthenticated, async (req, res) => {
 
     req.session.user.username = newUsername;
     req.session.user.avatar_url = avatar_url;
+
+    await Promise.all([postPromise, userPromise]);
 
     res.redirect("/profile");
 });
