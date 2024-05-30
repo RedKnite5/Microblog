@@ -373,7 +373,6 @@ app.get("/auth/google/callback",
 );
 
 
-
 passport.authenticate("google", {scope: ["profile"]});
 
 // Configure passport
