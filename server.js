@@ -148,7 +148,6 @@ app.get("/sort/:criteria", (req, res) => {
 
 
 // Register GET route is used for error response from registration
-//
 app.get("/registerUsername", (req, res) => {
     if (req.query.error !== undefined) {
         res.render("registerUsername", {regError: req.query.error});
@@ -158,13 +157,11 @@ app.get("/registerUsername", (req, res) => {
 });
 
 // Login route GET route is used for error response from login
-//
 app.get("/login", (req, res) => {
     res.render("login", {loginError: req.query.error});
 });
 
 // Error route: render error page
-//
 app.get("/error", (req, res) => {
     res.render("error");
 });
@@ -356,7 +353,7 @@ app.get("/auth/google", (req, res) => {
 });
 
 app.get("/auth/google/callback", 
-    passport.authenticate("google", { failureRedirect: "/" }),
+    passport.authenticate("google", {failureRedirect: "/"}),
     async (req, res) => {
         const googleId = req.user.id;
         const hash = crypto.createHash("sha256");

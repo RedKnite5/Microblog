@@ -80,6 +80,15 @@ input[type="text"],textarea {
     text-align: center;
 }
 
+.posts-header {
+    margin-left: .5em;
+    margin-left: .5em;
+}
+
+.sort-span {
+    white-space: nowrap;
+}
+
 .post-list-header {
     display: inline-flex;
     justify-content: space-between;

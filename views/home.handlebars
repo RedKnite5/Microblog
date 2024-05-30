@@ -39,7 +39,7 @@
                 </select>
             </span>
 
-            <h2>
+            <h2 class="posts-header">
                 {{#ifEq sortCriteria "id"}}
                     Recent
                 {{else}}
@@ -48,7 +48,7 @@
                 {{{postNeoType}}}s
             </h2>
 
-            <span>
+            <span class="sort-span">
                 <label for="sort-dropdown" class="dropdown-label">Sort:</label>
                 <select id="sort-dropdown" name="dropdown" class="dropdown">
                     <option value="id">Recency</option>
