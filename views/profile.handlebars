@@ -14,6 +14,11 @@
                     class="profile-avatar-img">
         </div>
 
+        <form action="/uploadAvatar" method="POST" enctype="multipart/form-data">
+            <input id="fileInput" type="file" name="avatar" class="no-display" accept=".png">
+            <input type="button" value="Upload Avatar" class="upload-avatar-button basic-button" id="upload-avatar-button">
+        </form>
+
         <section class="profile-info panel">
             <!-- user profile info -->
             <h1>User Profile</h1>
@@ -28,7 +33,9 @@
             <p><b>Member since:</b> {{user.memberSince}}</p>
         </section>
 
-        <button class="delete-account-button basic-button" id="delete-account-button">Delete Account</button>
+        <button class="delete-account-button basic-button" id="delete-account-button">
+            Delete Account
+        </button>
     </div>
 
     <section class="user-posts">

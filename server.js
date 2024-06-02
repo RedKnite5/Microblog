@@ -1,4 +1,6 @@
 const crypto = require("node:crypto");
+const fs = require("node:fs");
+const path = require("node:path");
 const process = require("node:process");
 const express = require("express");
 const expressHandlebars = require("express-handlebars");
@@ -9,6 +11,7 @@ const sqlite = require("sqlite");
 const sqlite3 = require("sqlite3");
 const helmet = require("helmet")
 const rateLimit = require("express-rate-limit");
+const multer = require("multer");
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 require("dotenv").config();
@@ -19,6 +22,18 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "public/images/");
+    },
+    filename: (req, file, cb) => {
+        const user = req.session.userId;
+        cb(null, `${user}.png`); // Generate a unique filename
+    }
+});
+
+const upload = multer({storage: storage});
 
 const app = express();
 const PORT = 3000;
@@ -218,9 +233,31 @@ app.get("/profile/sort/:criteria", isAuthenticated, (req, res) => {
     res.redirect("/profile");
 });
 
-app.get("/avatar/:username", (req, res) => {
+app.get("/avatar/:username", async (req, res) => {
     // Serve the avatar image for the user
-    return handleAvatar(req, res);
+
+    const username = req.params.username;
+
+    const { id } = await db.get("SELECT id FROM users WHERE username = $name", {
+        $name: username
+    });
+
+    const imageDirectory = path.join(__dirname, "public/images");
+    const imagePath = path.join(imageDirectory, `${id}.png`);
+
+    if (!fs.existsSync(imagePath)) {
+        saveAvatar(username[0], id);
+    }
+
+    res.sendFile(imagePath, (err) => {
+        if (err) {
+            res.status(500).send("Error sending the image");
+        }
+    });
+});
+
+app.post("/uploadAvatar", isAuthenticated, upload.single("avatar"), (req, res) => {
+    res.redirect("/profile");
 });
 
 app.post("/registerUsername", async (req, res) => {
@@ -460,6 +497,11 @@ async function addUser(username, hashedGoogleId) {
         $memberSince: getCurrentDateTime()
     });
 
+    const { id } = await db.get("SELECT id FROM users WHERE username = $name", {
+        $name: username
+    });
+
+    saveAvatar(username[0], id);
 }
 
 function getCurrentDateTime() {
@@ -622,4 +664,9 @@ function generateAvatar(letter, width = 200, height = 200) {
         {compressionLevel: 3, filters: canvas.PNG_FILTER_NONE});
 
     return buf
+}
+
+function saveAvatar(letter, id) {
+    const buf = generateAvatar(letter);
+    fs.writeFileSync(`public/images/${id}.png`, buf);
 }

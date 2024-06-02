@@ -77,6 +77,11 @@ function eventListeners() {
     const usernameInput = document.getElementById("username-input");
     usernameInput.addEventListener("focusout", changeUsername);
 
+    const fileInput = document.getElementById("fileInput")
+    const fileButton = document.getElementById("upload-avatar-button")
+    fileButton.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", () => fileInput.parentElement.submit());
+
 }
 
 eventListeners();

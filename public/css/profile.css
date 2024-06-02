@@ -76,6 +76,14 @@
     margin-bottom: 1em;
 }
 
+.upload-avatar-button {
+    padding: 1.5em;
+}
+
+.no-display {
+    display: none;
+}
+
 .delete-account-button {
     padding: 1.5em;
     margin-left: .7em;
@@ -115,7 +123,7 @@
     font-weight: bold;
     cursor: pointer;
 }
-  
+
 .close:hover,.close:focus {
     color: #000;
     text-decoration: none;
