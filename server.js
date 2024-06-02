@@ -369,6 +369,12 @@ app.post("/deleteAccount", isAuthenticated, async (req, res) => {
         $username: username
     });
 
+    fs.unlink(`public/images/${userId}.png`, (err) => {
+        if (err) {
+            console.log(`failed to delete public/images/${userId}.png`);
+        }
+    });
+
     await Promise.all([deletePromise, updatePromise]);
 
     res.redirect("/");
