@@ -435,18 +435,25 @@ async function getEmojis() {
     allEmojis = await emoji_data.json();
 }
 
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Server Activation
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-let db = null
+let db = null;
 async function activate() {
-    db = await sqlite.open(
-        {filename: "database.db", driver: sqlite3.Database}
-    );
+    const openSQL = sqlite.open({
+        filename: "database.db",
+        driver: sqlite3.Database
+    });
 
-    await getEmojis();
+    const dbPromise = openSQL.then(database => {
+        db = database;
+        return db;
+    });
+
+    const emojiPromise = getEmojis();
+
+    await Promise.all([dbPromise, emojiPromise]);
 
     app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);
@@ -551,18 +558,6 @@ function loginUser(req, res, username) {
             res.redirect("/");
         });
     });
-}
-
-// Function to handle avatar generation and serving
-function handleAvatar(req, res) {
-    // Generate and serve the user"s avatar image
-    res.set("Content-Type", "image/png");
-
-    const letter = req.params.username[0];
-    const buffer = generateAvatar(letter);
-
-    // Send the image buffer as the response
-    res.send(buffer);
 }
 
 // Function to get the current user from session
