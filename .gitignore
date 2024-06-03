@@ -132,4 +132,5 @@ dist
 
 # Custom
 backup.db
-
+data.json
+old_data.json

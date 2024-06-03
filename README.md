@@ -50,7 +50,8 @@ This project is a simplified clone of Twitter, created as part of a web programm
 5. **Access the application:**
    Open your browser and navigate to `http://localhost:3000`.
 
-
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
+## Credits
+Kwamikagami for Empty_set_symbol.png
