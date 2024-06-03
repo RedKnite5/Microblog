@@ -161,20 +161,10 @@ app.get("/sort/:criteria", (req, res) => {
         res.redirect("/");
         return;
     }
-    console.log(`ERROR invalid sorting criteria: '${req.params.criteria}'`);
+    res.redirect("/");
 });
 
 
-// Register GET route is used for error response from registration
-app.get("/registerUsername", csrfProtection, (req, res) => {
-    if (req.query.error !== undefined) {
-        res.render("registerUsername", {regError: req.query.error, csrfToken: req.csrfToken()});
-        return;
-    }
-    res.render("registerUsername", {csrfToken: req.csrfToken()});
-});
-
-// Login route GET route is used for error response from login
 app.get("/login", (req, res) => {
     res.render("login", {loginError: req.query.error});
 });
@@ -198,12 +188,20 @@ app.get("/post/:id", csrfProtection, async (req, res) => {
 app.post("/posts", isAuthenticated, csrfProtection, (req, res) => {
     // Add a new post and redirect to home
     // Jack wrote this
+    if (req.body.title === undefined || req.body.content === undefined) {
+        res.redirect("/");
+        return;
+    }
     addPost(req.body.title, req.body.content, getCurrentUser(req));
     res.redirect("/");
 });
 
 app.post("/like", isAuthenticated, csrfProtection, async (req, res) => {
     // Update post likes
+    if (req.body.id === undefined) {
+        res.redirect("back");
+        return;
+    }
     const post = await findPostById(parseInt(req.body.id));
     let postUserId = -1;
     if (post.username !== "deleted") {
@@ -233,7 +231,11 @@ app.get("/profile", isAuthenticated, csrfProtection, async (req, res) => {
 
 app.get("/profile/sort/:criteria", isAuthenticated, (req, res) => {
     // Sort posts by criteria
-    req.session.sortCriteria = req.params.criteria;
+    if (["id", "likes"].includes(req.params.criteria)) {
+        req.session.sortCriteria = req.params.criteria;
+        res.redirect("/profile");
+        return;
+    }
     res.redirect("/profile");
 });
 
@@ -272,6 +274,14 @@ app.post("/uploadAvatar", isAuthenticated, csrfProtection, upload.single("avatar
     res.redirect("/profile");
 });
 
+app.get("/registerUsername", csrfProtection, (req, res) => {
+    if (req.query.error !== undefined) {
+        res.render("registerUsername", {regError: req.query.error, csrfToken: req.csrfToken()});
+        return;
+    }
+    res.render("registerUsername", {csrfToken: req.csrfToken()});
+});
+
 app.post("/registerUsername", csrfProtection, async (req, res) => {
     // Register a new user
     if (req.session.hashedGoogleId === undefined) {
@@ -280,6 +290,10 @@ app.post("/registerUsername", csrfProtection, async (req, res) => {
     }
 
     const username = req.body.registerUsername;
+    if (username === undefined) {
+        res.redirect("/registerUsername");
+        return;
+    }
 
     const reservedUsernames = ["deleted"];
 
@@ -297,6 +311,12 @@ app.post("/registerUsername", csrfProtection, async (req, res) => {
 
 app.post("/updateUsername", isAuthenticated, csrfProtection, async (req, res) => {
     const newUsername = req.body.name;
+
+    if (newUsername === undefined) {
+        res.redirect("/profile");
+        return;
+    }
+
     const oldUsername = req.session.user.username;
     const sanitizedUsername = encodeURIComponent(newUsername);
     const avatar_url = `/avatar/${sanitizedUsername}`;
@@ -355,6 +375,10 @@ app.get("/googleLogout", async (req, res) => {
 app.post("/deletePost", isAuthenticated, csrfProtection, async (req, res) => {
     // Delete a post if the current user is the owner
     // Jack wrote this
+    if (req.body.id === undefined) {
+        res.redirect("back");
+        return;
+    }
     const del_id = parseInt(req.body.id);
 
     const post = await findPostById(del_id);
@@ -590,7 +614,7 @@ function getCurrentUser(req) {
 
 // Function to get all posts, sorted by latest first
 async function getPosts(sort) {
-    if (sort === undefined) {
+    if (!["id", "likes"].includes(sort)) {
         sort = "id";
     }
     return await db.all(`SELECT * FROM posts ORDER BY ${sort} DESC`);

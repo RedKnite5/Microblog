@@ -12,6 +12,7 @@ This project is a simplified clone of Twitter, created as part of a web programm
 - **Change Username** Allows users to change their username.
 - **Account Deletion** Users can delete their account, which will remove their name from all posts they have created.
 - **Sorting Posts** Posts can be sorted by how new they are or by how many likes they have.
+- **Custom Avatars** Users can upload their own avatars.
 
 ## Technologies Used
 - **Frontend:** HTML, CSS, JavaScript, Handlebars
