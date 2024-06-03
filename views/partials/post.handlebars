@@ -23,18 +23,22 @@
             {{#if loggedIn}}
                 {{#ifEq this.username user.username}}
                     <!-- font awesome trashcan -->
-                    <form action="/delete/{{this.id}}" method="POST">
+                    <form action="/deletePost" method="POST">
+                        <input type="hidden" name="id" value="{{this.id}}">
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}">
                         <button type="submit" class="delete-button icon-button">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </form>
                 {{else}}
                     <!-- Heart = ♥ -->
-                    <div>
+                    <form action="/like" method="POST">
+                        <input type="hidden" name="id" value="{{this.id}}">
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}">
                         <button type="submit" class="like-button icon-button">
                             <i class="fa-solid fa-heart" id="like-icon-{{this.id}}", data-id="{{this.id}}"></i>
                         </button>
-                    </div>
+                    </form>
                 {{/ifEq}}
             {{/if}}
 

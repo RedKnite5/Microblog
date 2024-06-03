@@ -9,6 +9,7 @@
             <!-- make a header here -->
             <h2>Create a new {{{postNeoType}}}!</h2>
             <form action="/posts" method="POST">
+                <input type="hidden" name="_csrf" value="{{csrfToken}}">
                 <!-- title input field name = "title" -->
                 <input type="text" id="post-title-input" name="title" placeholder="Title">
                 <!-- text area input field name = "content" -->
@@ -61,7 +62,7 @@
         <ul class="posts-ul">
             {{#each posts}}
                 <!-- you have to pass the user in to posts and this is the syntax -->
-                {{> post this user=../user loggedIn=../loggedIn}}
+                {{> post this user=../user loggedIn=../loggedIn csrfToken=../csrfToken}}
             {{/each}}
         </ul>
         {{else}}

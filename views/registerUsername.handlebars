@@ -9,6 +9,7 @@
             <p style="color: red;">{{regError}}</p>
         {{/if}}
         <form action="/registerUsername" method="POST">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
             <!-- the registration form goes here -->
             <div class="username-input">
                 <label for="register-username">Username:</label>

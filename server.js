@@ -11,6 +11,7 @@ const sqlite = require("sqlite");
 const sqlite3 = require("sqlite3");
 const helmet = require("helmet")
 const rateLimit = require("express-rate-limit");
+const csrf = require("csurf");
 const multer = require("multer");
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -34,6 +35,8 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({storage: storage});
+
+const csrfProtection = csrf();
 
 const app = express();
 const PORT = 3000;
@@ -142,14 +145,14 @@ app.use(favicon(__dirname + "/public/images/favicon.ico"));
 // We pass the posts and user variables into the home
 // template
 //
-app.get("/", async (req, res) => {
+app.get("/", csrfProtection, async (req, res) => {
     if (req.session.sortCriteria === undefined) {
         req.session.sortCriteria = "id";
     }
     const sortCriteria = req.session.sortCriteria;
     const posts = await getPosts(req.session.sortCriteria);
     const user = getCurrentUser(req) || {};
-    res.render("home", {posts, user, accessToken, sortCriteria});
+    res.render("home", {posts, user, accessToken, sortCriteria, csrfToken: req.csrfToken()});
 });
 
 app.get("/sort/:criteria", (req, res) => {
@@ -163,12 +166,12 @@ app.get("/sort/:criteria", (req, res) => {
 
 
 // Register GET route is used for error response from registration
-app.get("/registerUsername", (req, res) => {
+app.get("/registerUsername", csrfProtection, (req, res) => {
     if (req.query.error !== undefined) {
-        res.render("registerUsername", {regError: req.query.error});
+        res.render("registerUsername", {regError: req.query.error, csrfToken: req.csrfToken()});
         return;
     }
-    res.render("registerUsername");
+    res.render("registerUsername", {csrfToken: req.csrfToken()});
 });
 
 // Login route GET route is used for error response from login
@@ -183,30 +186,30 @@ app.get("/error", (req, res) => {
 
 // Additional routes that you must implement
 
-app.get("/post/:id", async (req, res) => {
+app.get("/post/:id", csrfProtection, async (req, res) => {
     // Render post detail page
     const current = await findPostById(parseInt(req.params.id));
     const user = req.session.user;
     const loggedIn = req.session.loggedIn;
     
-    res.render("post_page", {current, user, loggedIn});
+    res.render("post_page", {current, user, loggedIn, csrfToken: req.csrfToken()});
 });
 
-app.post("/posts", isAuthenticated, (req, res) => {
+app.post("/posts", isAuthenticated, csrfProtection, (req, res) => {
     // Add a new post and redirect to home
     // Jack wrote this
     addPost(req.body.title, req.body.content, getCurrentUser(req));
     res.redirect("/");
 });
 
-app.post("/like/:id", isAuthenticated, async (req, res) => {
+app.post("/like", isAuthenticated, csrfProtection, async (req, res) => {
     // Update post likes
-    const post = await findPostById(parseInt(req.params.id));
+    const post = await findPostById(parseInt(req.body.id));
     let postUserId = -1;
     if (post.username !== "deleted") {
         postUserId = (await findUserByUsername(post.username)).id;
     }
-    
+
     if (parseInt(req.session.userId) !== postUserId) {
         db.run("UPDATE posts SET likes = $newLikes WHERE id = $postId", {
             $newLikes: post.likes + 1,
@@ -215,16 +218,17 @@ app.post("/like/:id", isAuthenticated, async (req, res) => {
     } else {
         console.log("like blocked for own post by user: " + req.session.userId);
     }
+    res.redirect("back");
 });
 
-app.get("/profile", isAuthenticated, async (req, res) => {
+app.get("/profile", isAuthenticated, csrfProtection, async (req, res) => {
     // Render profile page
     const user = getCurrentUser(req) || {};
     const username = user.username;
     const sortCriteria = req.session.sortCriteria;
     const allPosts = await getPosts(sortCriteria);
     const posts = allPosts.filter(post => post.username === username);
-    res.render("profile", {user, posts, sortCriteria});
+    res.render("profile", {user, posts, sortCriteria, csrfToken: req.csrfToken()});
 });
 
 app.get("/profile/sort/:criteria", isAuthenticated, (req, res) => {
@@ -238,13 +242,16 @@ app.get("/avatar/:username", async (req, res) => {
 
     const username = req.params.username;
 
+    const dbRes = await db.get("SELECT id FROM users WHERE username = $name", {
+        $name: username
+    });
+
+
     let id = null;
-    if (username === "deleted") {
+    if (dbRes === undefined || dbRes.id === undefined) {
         id = "Empty_set_symbol";
     } else {
-        ({ id } = await db.get("SELECT id FROM users WHERE username = $name", {
-            $name: username
-        }));
+        id = dbRes.id;
     }
 
     const imageDirectory = path.join(__dirname, "public/images");
@@ -261,12 +268,16 @@ app.get("/avatar/:username", async (req, res) => {
     });
 });
 
-app.post("/uploadAvatar", isAuthenticated, upload.single("avatar"), (req, res) => {
+app.post("/uploadAvatar", isAuthenticated, csrfProtection, upload.single("avatar"), (req, res) => {
     res.redirect("/profile");
 });
 
-app.post("/registerUsername", async (req, res) => {
+app.post("/registerUsername", csrfProtection, async (req, res) => {
     // Register a new user
+    if (req.session.hashedGoogleId === undefined) {
+        res.redirect("/login");
+        return;
+    }
 
     const username = req.body.registerUsername;
 
@@ -284,7 +295,7 @@ app.post("/registerUsername", async (req, res) => {
     loginUser(req, res, username);
 });
 
-app.post("/updateUsername", isAuthenticated, async (req, res) => {
+app.post("/updateUsername", isAuthenticated, csrfProtection, async (req, res) => {
     const newUsername = req.body.name;
     const oldUsername = req.session.user.username;
     const sanitizedUsername = encodeURIComponent(newUsername);
@@ -341,10 +352,10 @@ app.get("/googleLogout", async (req, res) => {
     res.render("googleLogout");
 });
 
-app.post("/delete/:id", isAuthenticated, async (req, res) => {
+app.post("/deletePost", isAuthenticated, csrfProtection, async (req, res) => {
     // Delete a post if the current user is the owner
     // Jack wrote this
-    const del_id = parseInt(req.params.id);
+    const del_id = parseInt(req.body.id);
 
     const post = await findPostById(del_id);
     const poster = await findUserByUsername(post.username);
@@ -356,10 +367,10 @@ app.post("/delete/:id", isAuthenticated, async (req, res) => {
     db.run("DELETE FROM posts WHERE id = $id", {
         $id: del_id
     });
-    res.redirect("/");
+    res.redirect("back");
 });
 
-app.post("/deleteAccount", isAuthenticated, async (req, res) => {
+app.post("/deleteAccount", isAuthenticated, csrfProtection, async (req, res) => {
     const userId = req.session.userId;
     const username = req.session.user.username;
 

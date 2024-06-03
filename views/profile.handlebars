@@ -15,6 +15,7 @@
         </div>
 
         <form action="/uploadAvatar" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
             <input id="fileInput" type="file" name="avatar" class="no-display" accept=".png">
             <input type="button" value="Upload Avatar" class="upload-avatar-button basic-button" id="upload-avatar-button">
         </form>
@@ -22,15 +23,18 @@
         <section class="profile-info panel">
             <!-- user profile info -->
             <h1>User Profile</h1>
-            <p class="username-box">
+            <div class="username-box">
                 <span class="input-container">
                     <b>Username:</b>
                     <span id="current-username">{{user.username}}</span>
-                    <input type="text" id="username-input" value="{{user.username}}">
+                    <form action="/updateUsername" method="POST" id="update-username-form">
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                        <input type="text" id="username-input" name="name" value="{{user.username}}">
+                    </form>
                 </span>
                 <i class="fa-solid fa-pencil edit-username-button" id="edit-username"></i>
-            </p>
-            <p><b>Member since:</b> {{user.memberSince}}</p>
+            </div>
+            <p><b>Member since:</b> {{user.memberSince}}</p> 
         </section>
 
         <button class="delete-account-button basic-button" id="delete-account-button">
@@ -65,7 +69,7 @@
         {{#if posts.length}}
             <ul>
                 {{#each posts}}
-                    {{> post this user=../user loggedIn=true}}
+                    {{> post this user=../user loggedIn=true csrfToken=../csrfToken}}
                 {{/each}}
             </ul>
         {{else}}
@@ -75,13 +79,16 @@
     </section>
 </section>
 
-<div class="modal" id="delete-modal">
+<div class="modal" id="delete-modal" value="{{csrfToken}}">
     <div class="modal-content">
         <span class="close close-modal">&times;</span>
         <h2>Are you sure you want to delete your account?</h2>
         <br><br>
         <div class="modal-buttons">
-            <button id="DELETE-account" class="basic-button">Delete</button>
+            <form action="/deleteAccount" method="POST">
+                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                <button id="DELETE-account" class="basic-button">Delete</button>
+            </form>
             <button class="close-modal basic-button">Cancel</button>
         </div>
     </div>

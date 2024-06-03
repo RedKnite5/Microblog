@@ -14,8 +14,8 @@ function deleteAccount() {
     deleteModal.style.display = "none";
     fetch("/deleteAccount", {
         method: "POST",
-        headers: {"Content-Type": "text/plain"}, 
-        body: ""
+        headers: {"Content-Type": "application/json"}, 
+        body: JSON.stringify({_csrf: deleteModal.value})
     }).then(res => {
         window.location.href = "/logout";
     });
@@ -23,26 +23,20 @@ function deleteAccount() {
 
 function editingUsername() {
     const usernameSpan = document.getElementById("current-username");
-    const usernameInput = document.getElementById("username-input");
+    const usernameForm = document.getElementById("update-username-form");
 
     usernameSpan.style.display = "none";
-    usernameInput.style.display = "inline";
+    usernameForm.style.display = "inline";
 }
 
 function changeUsername() {
     const usernameSpan = document.getElementById("current-username");
-    const usernameInput = document.getElementById("username-input");
+    const usernameForm = document.getElementById("update-username-form");
 
     usernameSpan.style.display = "inline";
-    usernameInput.style.display = "none";
+    usernameForm.style.display = "none";
 
-    fetch("/updateUsername", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"}, 
-        body: JSON.stringify({"name": usernameInput.value})
-    }).then(res => {
-        window.location.href = "/profile";
-    });
+    usernameForm.submit();
 }
 
 function handleRedirect() {
@@ -71,8 +65,8 @@ function eventListeners() {
     const deleteAccountButton = document.getElementById("delete-account-button");
     deleteAccountButton.addEventListener("click", showDeleteModal);
 
-    const DELETEAccount = document.getElementById("DELETE-account");
-    DELETEAccount.addEventListener("click", deleteAccount);
+    //const DELETEAccount = document.getElementById("DELETE-account");
+    //DELETEAccount.addEventListener("click", deleteAccount);
 
     const usernameInput = document.getElementById("username-input");
     usernameInput.addEventListener("focusout", changeUsername);

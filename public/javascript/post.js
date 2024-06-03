@@ -7,13 +7,6 @@ function handleLikeClick(event) {
 
     likeCount.textContent = updatedLikeCount.toString() + " Likes";
     likeCount.setAttribute("count", updatedLikeCount.toString());
-
-    fetch("/like/" + postId, {method: "POST"});
-}
-
-function handleDeleteClick(event) {
-    const buttonElement = event.target.closest(".delete-button");
-    const postId = buttonElement.getAttribute("data-id");
 }
 
 function eventListeners() {

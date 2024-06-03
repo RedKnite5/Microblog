@@ -31,6 +31,7 @@
 .username-box {
     display: flex;
     justify-content: space-between;
+    flex-wrap: nowrap;
 }
 
 .input-container {
@@ -48,8 +49,11 @@
     color: var(--highlight-color);
 }
 
-#username-input {
+#update-username-form {
     display: none;
+}
+
+#username-input {
     max-width: 10em;
 }
 
