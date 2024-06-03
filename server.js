@@ -238,9 +238,14 @@ app.get("/avatar/:username", async (req, res) => {
 
     const username = req.params.username;
 
-    const { id } = await db.get("SELECT id FROM users WHERE username = $name", {
-        $name: username
-    });
+    let id = null;
+    if (username === "deleted") {
+        id = "Empty_set_symbol";
+    } else {
+        ({ id } = await db.get("SELECT id FROM users WHERE username = $name", {
+            $name: username
+        }));
+    }
 
     const imageDirectory = path.join(__dirname, "public/images");
     const imagePath = path.join(imageDirectory, `${id}.png`);
