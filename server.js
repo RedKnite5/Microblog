@@ -204,7 +204,7 @@ app.post("/like/:id", isAuthenticated, async (req, res) => {
     const post = await findPostById(parseInt(req.params.id));
     let postUserId = -1;
     if (post.username !== "deleted") {
-        postUserId = await findUserByUsername(post.username).id;
+        postUserId = (await findUserByUsername(post.username)).id;
     }
     
     if (parseInt(req.session.userId) !== postUserId) {
