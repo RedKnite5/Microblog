@@ -270,9 +270,13 @@ app.get("/avatar/:username", async (req, res) => {
     });
 });
 
-app.post("/uploadAvatar", isAuthenticated, csrfProtection, upload.single("avatar"), (req, res) => {
-    res.redirect("/profile");
-});
+app.post("/uploadAvatar",
+    isAuthenticated,
+    csrfProtection,
+    upload.single("avatar"),
+    (req, res) => {
+        res.redirect("/profile");
+    });
 
 app.get("/registerUsername", csrfProtection, (req, res) => {
     if (req.query.error !== undefined) {
