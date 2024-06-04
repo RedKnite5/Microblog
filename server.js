@@ -41,7 +41,7 @@ const csrfProtection = csrf();
 const app = express();
 const PORT = 3000;
 
-let allEmojis = [];  // Global list to hold all emojis
+let allEmojis = [];
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

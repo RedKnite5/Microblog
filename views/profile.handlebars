@@ -1,10 +1,8 @@
-{{! Use the main layout }}
 {{!< main }}
 
 <section class="profile-page">
     <div class="profile-container">
         <div class="profile-avatar">
-            <!-- Correct path for the default avatar image -->
             <img src="{{#if user.avatar_url}}
                         {{user.avatar_url}}
                     {{else}}
@@ -43,7 +41,6 @@
     </div>
 
     <section class="user-posts">
-        <!-- you can call posts tweets, or truths, or whatever, these are neologisms. Choose your own new in server.js -->
         <nav class="post-list-header">
             <span class="invisible">
                 <label for="sort-dropdown-dummy" class="dropdown-label">Sort:</label>
@@ -64,8 +61,6 @@
             </span>
         </nav>
 
-        <!-- you'll need to make this conditaionl and #each expression work -->
-        <!-- Need a way to check how many posts the user has made -->
         {{#if posts.length}}
             <ul>
                 {{#each posts}}
@@ -73,7 +68,6 @@
                 {{/each}}
             </ul>
         {{else}}
-            <!-- fix this up with some helper functions and other handlebars expressions, or add you own character -->
             <p class="no-posts-alert">There is a {{postNeoType}} famine. Help!</p>
         {{/if}}
     </section>
