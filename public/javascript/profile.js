@@ -9,18 +9,6 @@ function closeModal() {
     deleteModal.style.display = "none";
 }
 
-function deleteAccount() {
-    const deleteModal = document.getElementById("delete-modal");
-    deleteModal.style.display = "none";
-    fetch("/deleteAccount", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"}, 
-        body: JSON.stringify({_csrf: deleteModal.value})
-    }).then(res => {
-        window.location.href = "/logout";
-    });
-}
-
 function editingUsername() {
     const usernameSpan = document.getElementById("current-username");
     const usernameForm = document.getElementById("update-username-form");
@@ -65,9 +53,6 @@ function eventListeners() {
     const deleteAccountButton = document.getElementById("delete-account-button");
     deleteAccountButton.addEventListener("click", showDeleteModal);
 
-    //const DELETEAccount = document.getElementById("DELETE-account");
-    //DELETEAccount.addEventListener("click", deleteAccount);
-
     const usernameInput = document.getElementById("username-input");
     usernameInput.addEventListener("focusout", changeUsername);
 
@@ -75,7 +60,6 @@ function eventListeners() {
     const fileButton = document.getElementById("upload-avatar-button")
     fileButton.addEventListener("click", () => fileInput.click());
     fileInput.addEventListener("change", () => fileInput.parentElement.submit());
-
 }
 
 eventListeners();
