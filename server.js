@@ -352,24 +352,7 @@ app.post("/updateUsername", isAuthenticated, csrfProtection, async (req, res) =>
 
 app.get("/logout", isAuthenticated, (req, res) => {
     // Logout the user
-    // clear the user from the session object and save.
-    // this will ensure that re-using the old session id
-    // does not have a logged in user
-    req.session.user = null;
-    req.session.save(function (err) {
-        if (err) {
-            next(err);
-        }
-
-        // regenerate the session, which is good practice to help
-        // guard against forms of session fixation
-        req.session.regenerate(function (err) {
-            if (err) {
-                next(err);
-            }
-            res.redirect("/googleLogout");
-        });
-    });
+    logoutUser(req, res);
 });
 
 app.get("/googleLogout", async (req, res) => {
@@ -421,7 +404,7 @@ app.post("/deleteAccount", isAuthenticated, csrfProtection, async (req, res) => 
 
     await Promise.all([deletePromise, updatePromise]);
 
-    res.redirect("/");
+    logoutUser(req, res);
 });
 
 app.get("/emojis", (req, res) => {
@@ -637,6 +620,27 @@ async function addPost(title, content, user) {
         $username: user.username,
         $timestamp: getCurrentDateTime(),
         $likes: 0
+    });
+}
+
+function logoutUser(req, res) {
+    // clear the user from the session object and save.
+    // this will ensure that re-using the old session id
+    // does not have a logged in user
+    req.session.user = null;
+    req.session.save(function (err) {
+        if (err) {
+            next(err);
+        }
+
+        // regenerate the session, which is good practice to help
+        // guard against forms of session fixation
+        req.session.regenerate(function (err) {
+            if (err) {
+                next(err);
+            }
+            res.redirect("/googleLogout");
+        });
     });
 }
 
