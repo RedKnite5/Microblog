@@ -272,8 +272,8 @@ app.get("/avatar/:username", async (req, res) => {
 
 app.post("/uploadAvatar",
     isAuthenticated,
-    csrfProtection,
     upload.single("avatar"),
+    csrfProtection,
     (req, res) => {
         res.redirect("/profile");
     });
